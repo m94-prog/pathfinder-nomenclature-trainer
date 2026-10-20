@@ -1,0 +1,640 @@
+<title>Pathfinder Nomenclature Trainer</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a field-manual study bench. Header strip with the countdown, tab bar, then one working surface per mode.
+   Photos carry the weight; type is condensed and utilitarian; signal orange marks the thing you're being asked about. */
+:root{
+  --bg:#f1eee4; --surface:#fbfaf5; --surface2:#e8e4d6; --ink:#1c1f15; --muted:#5f6553; --line:#d4d1c2;
+  --accent:#d6511c; --accent-ink:#ffffff; --olive:#55603d; --olive-soft:#dfe3cf;
+  --good:#2f7a45; --good-soft:#d8ecd9; --bad:#b4332b; --bad-soft:#f3d9d5;
+  --display:"Barlow Condensed","Arial Narrow",Impact,sans-serif;
+  --body:"IBM Plex Sans","Helvetica Neue",Arial,sans-serif;
+  --mono:"IBM Plex Mono","SFMono-Regular",Consolas,monospace;
+  --radius:6px; --shadow:0 1px 2px rgba(20,22,12,.08),0 6px 18px rgba(20,22,12,.08);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#14160f; --surface:#1e2117; --surface2:#272b1e; --ink:#ebe8dc; --muted:#a3a792; --line:#363a2a;
+  --accent:#f2743a; --accent-ink:#1a0d05; --olive:#a3ad84; --olive-soft:#2d3324;
+  --good:#6cc088; --good-soft:#1f3326; --bad:#f08a80; --bad-soft:#3d2321; --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 20px rgba(0,0,0,.35);
+  color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#14160f; --surface:#1e2117; --surface2:#272b1e; --ink:#ebe8dc; --muted:#a3a792; --line:#363a2a;
+  --accent:#f2743a; --accent-ink:#1a0d05; --olive:#a3ad84; --olive-soft:#2d3324;
+  --good:#6cc088; --good-soft:#1f3326; --bad:#f08a80; --bad-soft:#3d2321; --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 20px rgba(0,0,0,.35);
+  color-scheme:dark }
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--olive)}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+img{max-width:100%;display:block}
+h1,h2,h3{font-family:var(--display);font-weight:600;letter-spacing:.01em;margin:0;text-wrap:balance}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.eyebrow{font-family:var(--display);font-weight:600;text-transform:uppercase;letter-spacing:.08em;font-size:12px;color:var(--muted)}
+
+/* header */
+.top{background:var(--olive);color:#f4f2e8;position:sticky;top:env(safe-area-inset-top,0px);z-index:9}
+.top .in{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));max-width:1240px;margin:0 auto}
+.top h1{font-size:26px;line-height:1;color:#fff}
+.top h1 small{display:block;font-family:var(--body);font-weight:400;font-size:12px;letter-spacing:.06em;text-transform:uppercase;opacity:.8;margin-top:2px}
+.countdown{margin-left:auto;display:flex;align-items:center;gap:10px;background:rgba(0,0,0,.22);padding:6px 12px;border-radius:var(--radius)}
+.countdown b{font-family:var(--display);font-size:30px;line-height:1;font-weight:700;color:#ffd4bf}
+.countdown span{font-size:12px;line-height:1.2;opacity:.9;text-transform:uppercase;letter-spacing:.06em}
+.mastery{display:flex;align-items:center;gap:8px;font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+.mastery .bar{width:120px;height:8px;background:rgba(0,0,0,.3);border-radius:4px;overflow:hidden}
+.mastery .bar i{display:block;height:100%;background:#ffd4bf;width:0}
+.tabs{background:var(--surface);border-bottom:1px solid var(--line)}
+.tabs .in{display:flex;gap:2px;overflow-x:auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));max-width:1240px;margin:0 auto}
+.tabs button{font-family:var(--display);font-size:17px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;padding:12px 14px 10px;border-bottom:3px solid transparent;color:var(--muted);white-space:nowrap}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+main{max-width:1240px;margin:0 auto;padding-block:18px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.view{display:none}.view.on{display:block}
+
+/* chips, buttons */
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:var(--surface);padding:5px 11px;border-radius:999px;font-size:13px;font-weight:500;color:var(--muted)}
+.chip[aria-pressed="true"]{background:var(--olive);border-color:var(--olive);color:#fff}
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);padding:9px 16px;border-radius:var(--radius);font-weight:600;font-size:14px}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.good{background:var(--good);border-color:var(--good);color:#fff}
+.btn.bad{background:var(--bad);border-color:var(--bad);color:#fff}
+.btn.quiet{border-color:transparent;color:var(--muted)}
+.btn:disabled{opacity:.45;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+/* study */
+.study{display:grid;grid-template-columns:260px minmax(0,1fr);gap:20px}
+@media (max-width:820px){.study{grid-template-columns:1fr}}
+.figlist{border:1px solid var(--line);background:var(--surface);border-radius:var(--radius);overflow:auto;max-height:calc(100vh - 190px);align-self:start}
+@media (max-width:820px){.figlist{max-height:220px}}
+.figlist .grp{display:flex;align-items:center;gap:8px;width:100%;text-align:left;background:var(--surface2);padding:9px 12px;font-family:var(--display);font-weight:600;font-size:15px;text-transform:uppercase;letter-spacing:.08em;color:var(--olive);border-bottom:1px solid var(--line)}
+.figlist .grp .chev{width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:7px solid currentColor;transform:rotate(-90deg);transition:transform .15s;flex:none}
+.figlist .grp[aria-expanded="true"] .chev{transform:rotate(0)}
+.figlist .grp .cnt{margin-left:auto;font-size:11px;color:var(--muted);font-weight:400;letter-spacing:0}
+.figlist .grpbody button{display:flex;width:100%;text-align:left;padding:8px 12px 8px 20px;gap:8px;border-bottom:1px solid var(--line);font-size:13.5px;align-items:baseline}
+.figlist .grpbody button .k{font-family:var(--mono);font-size:11px;color:var(--muted);min-width:22px}
+.figlist .grpbody button[aria-current="true"]{background:var(--olive-soft);font-weight:600}
+.figlist .grpbody button .m{margin-left:auto;width:8px;height:8px;border-radius:50%;background:var(--line);flex:none;align-self:center}
+.figlist .grpbody button .m.done{background:var(--good)}
+@media (prefers-reduced-motion:reduce){.figlist .grp .chev{transition:none}}
+.stage{min-width:0}
+.stage .head{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+.stage h2{font-size:28px;line-height:1.05}
+.stage .head .row{margin-left:auto}
+.photo{position:relative;background:#0e100b;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);max-width:100%}
+.photo img{width:100%;height:auto;user-select:none;-webkit-user-drag:none}
+.hs{position:absolute;transform:translate(-50%,-50%);width:30px;height:30px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-family:var(--display);font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.6);cursor:pointer;padding:0;transition:transform .12s}
+.hs:hover{transform:translate(-50%,-50%) scale(1.15)}
+.hs.sel{background:#fff;color:var(--accent);box-shadow:0 0 0 4px var(--accent),0 1px 6px rgba(0,0,0,.6)}
+.hs.blank{font-size:0;width:24px;height:24px;background:rgba(255,255,255,.85);border-color:var(--accent)}
+.hs.target{background:var(--accent);box-shadow:0 0 0 5px rgba(255,255,255,.9),0 0 0 9px var(--accent);animation:pulse 1.4s ease-in-out infinite}
+.hs.dim{opacity:.35}
+.hs.right{background:var(--good);color:#fff}.hs.wrong{background:var(--bad);color:#fff}
+@keyframes pulse{50%{box-shadow:0 0 0 5px rgba(255,255,255,.9),0 0 0 14px rgba(214,81,28,.35)}}
+@media (prefers-reduced-motion:reduce){.hs.target{animation:none}.hs{transition:none}}
+.callout{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(transparent,rgba(10,12,6,.85) 30%);color:#fff;padding:36px 14px 12px;font-size:14px;pointer-events:none}
+.callout b{font-family:var(--display);font-size:22px;font-weight:600;display:block;line-height:1.05}
+.callout .d{display:flex;gap:14px;flex-wrap:wrap;margin-top:4px}
+.callout .d span{font-family:var(--mono);font-size:13px}
+.callout .d span i{font-style:normal;color:#ffd4bf;font-family:var(--body);font-size:11px;text-transform:uppercase;letter-spacing:.06em;margin-right:5px}
+.legend{margin-top:14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px}
+.legend button{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:9px 10px}
+.legend button[aria-current="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.legend .n{font-family:var(--display);font-weight:700;color:var(--accent);font-size:18px;line-height:1.1}
+.legend .nm{font-weight:600;font-size:14px;line-height:1.25}
+.legend .dt{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin-top:3px}
+.legend .dt b{color:var(--ink);font-weight:500}
+.legend.hidden .nm,.legend.hidden .dt{filter:blur(6px);user-select:none}
+.legend.hidden button.reveal .nm,.legend.hidden button.reveal .dt{filter:none}
+.note{font-size:13px;color:var(--muted);margin-top:10px;border-left:3px solid var(--olive);padding-left:10px}
+.stage .nav{display:flex;gap:8px;margin-top:14px;justify-content:space-between}
+
+/* flashcards */
+.fc-wrap{max-width:760px;margin:0 auto}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);overflow:hidden;margin-top:14px}
+.card .q{padding:14px 16px 6px;display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.card .q b{font-family:var(--display);font-size:22px;font-weight:600}
+.card .body{padding:0 16px 16px}
+.card .photo{width:fit-content;max-width:100%;margin:0 auto}
+.card .photo img{max-height:min(62vh,540px);width:auto;max-width:100%;height:auto}
+.card .ans .photo{margin-bottom:10px}
+#qRun{max-width:820px;margin:0 auto}
+.card .ans{border-top:1px dashed var(--line);margin-top:12px;padding-top:12px}
+.card .ans b{font-family:var(--display);font-size:26px;font-weight:600;line-height:1.05;display:block}
+.card .ans .d{font-family:var(--mono);font-size:14px;margin-top:6px;display:flex;gap:16px;flex-wrap:wrap}
+.card .ans .d i{font-style:normal;font-family:var(--body);font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-right:5px}
+.fc-actions{display:flex;gap:10px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+.meter{display:flex;gap:4px;margin-top:12px}
+.meter i{flex:1;height:6px;border-radius:3px;background:var(--line)}
+.meter i.b1{background:var(--bad)}.meter i.b2{background:#c98a2b}.meter i.b3{background:var(--good)}.meter i.b4{background:var(--good)}
+.empty{padding:40px 16px;text-align:center;color:var(--muted)}
+
+/* quiz */
+.setup{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px;display:grid;gap:14px;max-width:760px}
+.setup .eyebrow{margin-bottom:6px}
+.choices{display:grid;gap:8px;margin-top:12px}
+.choice{display:grid;grid-template-columns:30px 1fr;gap:10px;align-items:center;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:10px 12px;font-size:15px}
+.choice:hover{border-color:var(--muted)}
+.choice .k{font-family:var(--display);font-weight:700;font-size:16px;color:var(--muted);border:1px solid var(--line);border-radius:4px;text-align:center;line-height:24px}
+.choice.right{background:var(--good-soft);border-color:var(--good)}
+.choice.wrong{background:var(--bad-soft);border-color:var(--bad)}
+.choice:disabled{cursor:default}
+.verdict{margin-top:12px;padding:10px 12px;border-radius:var(--radius);font-weight:600;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.verdict.ok{background:var(--good-soft);color:var(--good)}
+.verdict.no{background:var(--bad-soft);color:var(--bad)}
+.verdict .btn{margin-left:auto}
+.qprog{display:flex;align-items:center;gap:12px;margin-bottom:10px;font-family:var(--mono);font-size:13px;color:var(--muted)}
+.qprog .bar{flex:1;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.qprog .bar i{display:block;height:100%;background:var(--accent)}
+.result{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px;max-width:760px;margin:0 auto}
+.result .big{font-family:var(--display);font-size:64px;font-weight:700;line-height:1;color:var(--accent)}
+.result ul{list-style:none;padding:0;margin:14px 0 0;display:grid;gap:6px}
+.result li{display:grid;grid-template-columns:1fr auto;gap:10px;padding:8px 10px;background:var(--bad-soft);border-radius:var(--radius);font-size:14px}
+.result li b{font-family:var(--mono);font-weight:500}
+
+/* tables */
+.tables{display:grid;gap:22px}
+.tbl{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius)}
+table{border-collapse:collapse;width:100%;min-width:420px;font-size:14px}
+th,td{padding:8px 12px;text-align:left;border-bottom:1px solid var(--line)}
+th{font-family:var(--display);font-size:15px;text-transform:uppercase;letter-spacing:.06em;background:var(--surface2)}
+td.num,th.num{text-align:right}
+.swatch{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:6px;border:1px solid rgba(0,0,0,.2)}
+.tables .cap{font-size:13px;color:var(--muted);margin:0 0 8px}
+.caplist{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:6px}
+.caplist div{display:flex;justify-content:space-between;gap:10px;padding:7px 10px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);font-size:13.5px}
+.caplist div b{font-family:var(--mono);font-weight:500;white-space:nowrap}
+
+/* progress */
+.prog{display:grid;gap:10px;max-width:760px}
+.prow{display:grid;grid-template-columns:140px 1fr 60px;gap:12px;align-items:center;font-size:14px}
+.prow .bar{height:10px;background:var(--line);border-radius:5px;overflow:hidden;display:flex}
+.prow .bar i{display:block;height:100%;background:var(--good)}
+.prow .bar i.part{background:#c98a2b}
+.weak{margin-top:20px}
+.weak ul{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:4px}
+.weak li{display:flex;justify-content:space-between;gap:10px;padding:6px 10px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);font-size:13.5px}
+.plan{margin-top:24px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;max-width:760px}
+.plan ol{margin:8px 0 0;padding-left:20px;display:grid;gap:4px;font-size:14px}
+.kbd{font-family:var(--mono);font-size:11px;border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:0 5px;color:var(--muted)}
+.hint{font-size:12.5px;color:var(--muted);margin-top:8px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:999px;font-size:13px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:20}
+.toast.show{opacity:1}
+</style>
+
+<header class="top"><div class="in">
+  <h1>Pathfinder Nomenclature<small>Sling load equipment · A-22 · Cargo nets · M1101 · M1151 · Blivets · ISV</small></h1>
+  <div class="mastery"><span>Mastered</span><div class="bar"><i id="mBar"></i></div><span id="mPct" class="num">0%</span></div>
+  <div class="countdown"><b id="cdNum">—</b><span id="cdLbl">days to<br>9 NOV</span></div>
+</div></header>
+<nav class="tabs"><div class="in" role="tablist">
+  <button role="tab" data-tab="study" aria-selected="true">Study</button>
+  <button role="tab" data-tab="cards">Flashcards</button>
+  <button role="tab" data-tab="quiz">Quiz</button>
+  <button role="tab" data-tab="tables">Tables</button>
+  <button role="tab" data-tab="progress">Progress</button>
+</div></nav>
+
+<main>
+<!-- STUDY -->
+<section class="view on" id="v-study">
+  <div class="study">
+    <aside class="figlist" id="figlist"></aside>
+    <div class="stage">
+      <div class="head">
+        <div><div class="eyebrow" id="stSec"></div><h2 id="stTitle"></h2></div>
+        <div class="row">
+          <button class="chip" id="toggleLabels" aria-pressed="false">Hide names (self-test)</button>
+        </div>
+      </div>
+      <div class="photo" id="stPhoto"></div>
+      <div class="legend" id="stLegend"></div>
+      <div class="note" id="stNote" hidden></div>
+      <div class="tables" id="stTables" style="margin-top:14px"></div>
+      <div class="nav">
+        <button class="btn" id="stPrev">← Previous</button>
+        <span class="hint">Tap a number on the photo or in the list. <span class="kbd">←</span> <span class="kbd">→</span> move between photos, <span class="kbd">H</span> hides names.</span>
+        <button class="btn" id="stNext">Next →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FLASHCARDS -->
+<section class="view" id="v-cards">
+  <div class="fc-wrap">
+    <div class="eyebrow">Sections</div>
+    <div class="chips" id="fcSecs"></div>
+    <div class="eyebrow" style="margin-top:10px">Card types</div>
+    <div class="chips" id="fcTypes">
+      <button class="chip" data-t="name" aria-pressed="true">Name the part</button>
+      <button class="chip" data-t="cap" aria-pressed="true">Rated capacity</button>
+      <button class="chip" data-t="fact" aria-pressed="true">Sizes &amp; tables</button>
+    </div>
+    <div class="eyebrow" style="margin-top:10px">Photos</div>
+    <div class="chips" id="fcPhoto">
+      <button class="chip" data-p="front" aria-pressed="true">On the front</button>
+      <button class="chip" data-p="back">On the answer only</button>
+      <button class="chip" data-p="off">Off</button>
+    </div>
+    <div class="hint" id="fcPhotoHint">"On the answer only" flips name cards around: you get the name and have to picture the part, then the photo shows it marked. "Off" drops the name cards.</div>
+    <div class="hint">Cards you miss come back sooner. Four green bars on a card means it is mastered. <span class="kbd">Space</span> flips, <span class="kbd">1</span> missed, <span class="kbd">2</span> got it.</div>
+    <div id="fcCard"></div>
+    <div class="fc-actions" id="fcActions"></div>
+  </div>
+</section>
+
+<!-- QUIZ -->
+<section class="view" id="v-quiz">
+  <div id="qSetup" class="setup">
+    <div><div class="eyebrow">Sections</div><div class="chips" id="qSecs"></div></div>
+    <div><div class="eyebrow">Question types</div><div class="chips" id="qTypes">
+      <button class="chip" data-t="name" aria-pressed="true">Name the part</button>
+      <button class="chip" data-t="find" aria-pressed="true">Find it on the photo</button>
+      <button class="chip" data-t="cap" aria-pressed="true">Rated capacity</button>
+      <button class="chip" data-t="fact" aria-pressed="true">Sizes &amp; tables</button>
+    </div></div>
+    <div><div class="eyebrow">Length</div><div class="chips" id="qLen">
+      <button class="chip" data-n="10">10</button><button class="chip" data-n="20" aria-pressed="true">20</button><button class="chip" data-n="40">40</button><button class="chip" data-n="999">Everything</button>
+    </div></div>
+    <div class="row"><button class="btn primary" id="qStart">Start quiz</button><button class="btn" id="qWeak">Drill my weak items</button></div>
+  </div>
+  <div id="qRun" hidden>
+    <div class="qprog"><span id="qCount">1 / 20</span><div class="bar"><i id="qBar"></i></div><span id="qScore">0 right</span><button class="btn quiet" id="qQuit">Quit</button></div>
+    <div id="qBody"></div>
+  </div>
+  <div id="qResult" hidden></div>
+</section>
+
+<!-- TABLES -->
+<section class="view" id="v-tables"><div class="tables" id="tables"></div></section>
+
+<!-- PROGRESS -->
+<section class="view" id="v-progress">
+  <div class="prog" id="progRows"></div>
+  <div class="weak" id="weak"></div>
+  <div class="plan" id="plan"></div>
+  <div class="row" style="margin-top:16px"><button class="btn" id="resetBtn">Reset all progress</button><span class="hint">Progress is saved in this browser only.</span></div>
+</section>
+</main>
+<div class="toast" id="toast"></div>
+
+<script>
+const DATA = {"sections":[{"id":"sling","name":"Sling Load Equipment","short":"Sling Load"},{"id":"a22","name":"A-22 Cargo Bag","short":"A-22"},{"id":"nets","name":"5K and 10K Cargo Nets","short":"Cargo Nets"},{"id":"m1101","name":"M1101 Trailer","short":"M1101"},{"id":"m1151","name":"M1151 HMMWV","short":"M1151"},{"id":"blivet","name":"Triple Blivets","short":"Blivets"},{"id":"isv","name":"M1301 ISV","short":"ISV"}],"items":{"xxvi":{"name":"Aerial Delivery Sling, Type XXVI (Multi-Loop Line)","sec":"sling","cap":null,"lp":null,"size":null,"note":"Rated capacity depends on number of loops and whether it is used as a pendant or as a lifting provision. See the Tables tab.","alias":null},"donut":{"name":"3 Foot Apex Ring (Donut Ring)","sec":"sling","cap":10000,"lp":null,"size":null,"note":"Aerial Delivery Sling with Type IV Connector Link","alias":null},"typeiv":{"name":"Type IV Connector Link","sec":"sling","cap":12500,"lp":null,"size":null,"note":null,"alias":null},"baseplate":{"name":"Base Plate","sec":"sling","cap":null,"lp":null,"size":null,"note":"Part of the Type IV Connector Link","alias":null},"albuffer":{"name":"Aluminum Buffers","sec":"sling","cap":null,"lp":null,"size":null,"note":"Part of the Type IV Connector Link","alias":null},"lockplate":{"name":"Locking Plate","sec":"sling","cap":null,"lp":null,"size":null,"note":"Part of the Type IV Connector Link","alias":null},"cottonbuffer":{"name":"Cotton Buffer","sec":"sling","cap":null,"lp":null,"size":null,"note":"Sleeve on the donut ring","alias":null},"twopoint":{"name":"Two Point Link Assembly","sec":"sling","cap":25000,"lp":null,"size":null,"note":null,"alias":null},"clevis_s":{"name":"Small Suspension Clevis","sec":"sling","cap":6250,"lp":3750,"size":null,"note":null,"alias":null},"clevis_m":{"name":"Medium Suspension Clevis","sec":"sling","cap":6250,"lp":3750,"size":null,"note":null,"alias":null},"clevis_l":{"name":"Large Suspension Clevis","sec":"sling","cap":12500,"lp":7875,"size":null,"note":null,"alias":null},"nut":{"name":"Nut","sec":"sling","cap":null,"lp":null,"size":null,"note":"Suspension clevis hardware","alias":null},"bolt":{"name":"Bolt","sec":"sling","cap":null,"lp":null,"size":null,"note":"Suspension clevis hardware","alias":null},"a7a":{"name":"A7A Strap","sec":"sling","cap":500,"lp":null,"size":null,"note":null,"alias":null},"friction":{"name":"Friction Adapter","sec":"sling","cap":null,"lp":null,"size":null,"note":null,"alias":null},"cgu":{"name":"CGU-1/B","sec":"sling","cap":5000,"lp":null,"size":null,"note":null,"alias":null},"dacron":{"name":"15 Foot Tie-Down Strap (Dacron Lashings)","sec":"sling","cap":10000,"lp":null,"size":null,"note":null,"alias":null},"dring":{"name":"D-Ring","sec":"sling","cap":null,"lp":null,"size":null,"note":null,"alias":null},"binder_silver":{"name":"Silver Load Binder","sec":"sling","cap":5000,"lp":null,"size":null,"note":null,"alias":null},"binder_black":{"name":"Black Load Binder","sec":"sling","cap":10000,"lp":null,"size":null,"note":null,"alias":null},"screwpin":{"name":"Screw Pin","sec":"sling","cap":null,"lp":null,"size":null,"note":"Part of the 5/8 in Screw Pin Clevis","alias":null},"cotter":{"name":"Cotter Pin","sec":"sling","cap":null,"lp":null,"size":null,"note":null,"alias":null},"clevis58":{"name":"5/8 Inch Screw Pin Clevis","sec":"sling","cap":4420,"lp":null,"size":null,"note":null,"alias":null},"apex10":{"name":"10,000 lbs Apex Fitting","sec":"sling","cap":10000,"lp":null,"size":null,"note":null,"alias":null},"leg10":{"name":"10,000 lbs Sling Leg","sec":"sling","cap":2500,"lp":null,"size":null,"note":"Rated capacity is per leg","alias":null},"chain":{"name":"Chain","sec":"sling","cap":null,"lp":null,"size":null,"note":"Part of the sling leg","alias":null},"grabhook":{"name":"Grabhook Assembly","sec":"sling","cap":null,"lp":null,"size":null,"note":null,"alias":null},"apex25":{"name":"25,000 lbs Apex Fitting","sec":"sling","cap":25000,"lp":null,"size":null,"note":null,"alias":null},"leg25":{"name":"25,000 lbs Sling Leg","sec":"sling","cap":6250,"lp":null,"size":null,"note":"Rated capacity is per leg","alias":null},"apexpin10":{"name":"Apex Fitting Pin (10,000 lbs)","sec":"sling","cap":10000,"lp":null,"size":"1 1/8 inch","note":"Pin for the 10,000 lbs apex fitting","alias":null},"apexpin25":{"name":"Apex Fitting Pin (25,000 lbs)","sec":"sling","cap":25000,"lp":null,"size":"1 1/2 inch","note":"Pin for the 25,000 lbs apex fitting","alias":null},"apexspacer":{"name":"Apex Spacer","sec":"sling","cap":null,"lp":null,"size":null,"note":null,"alias":null},"apexshackle10":{"name":"Apex Shackle (10,000 lbs)","sec":"sling","cap":10000,"lp":null,"size":null,"note":null,"alias":null},"apexshackle25":{"name":"Apex Shackle (25,000 lbs)","sec":"sling","cap":25000,"lp":null,"size":null,"note":null,"alias":null},"castnut":{"name":"Castellated Nut","sec":"sling","cap":null,"lp":null,"size":null,"note":null,"alias":null},"drilledbolt":{"name":"3/8 Inch Drilled Bolt","sec":"sling","cap":null,"lp":null,"size":"3/8 inch","note":null,"alias":null},"gh_bolt":{"name":"Bolt and Dome Nut / Locking Nut","sec":"sling","cap":null,"lp":null,"size":null,"note":"Grabhook assembly","alias":null},"gh_keeper":{"name":"Keeper","sec":"sling","cap":null,"lp":null,"size":null,"note":"Grabhook assembly","alias":null},"gh_hook":{"name":"Hook","sec":"sling","cap":null,"lp":null,"size":null,"note":"Grabhook assembly","alias":null},"gh_pin":{"name":"Pin","sec":"sling","cap":null,"lp":null,"size":null,"note":"Grabhook assembly","alias":null},"gh_yoke":{"name":"Yoke","sec":"sling","cap":null,"lp":null,"size":null,"note":"Grabhook assembly","alias":null},"gh_eye":{"name":"Eye","sec":"sling","cap":null,"lp":null,"size":null,"note":"Grabhook assembly","alias":null},"gh_coupling":{"name":"Coupling Link","sec":"sling","cap":null,"lp":null,"size":null,"note":"Grabhook assembly","alias":null},"gh_spacer":{"name":"Spacer","sec":"sling","cap":null,"lp":null,"size":null,"note":"Grabhook assembly","alias":null},"gh_snap":{"name":"Snap Ring","sec":"sling","cap":null,"lp":null,"size":null,"note":"Grabhook assembly","alias":null},"pendant25":{"name":"25,000 lbs Cargo Hook Reach Pendant","sec":"sling","cap":25000,"lp":null,"size":null,"note":null,"alias":null},"pendant11":{"name":"11,000 lbs Cargo Hook Reach Pendant","sec":"sling","cap":11000,"lp":null,"size":null,"note":null,"alias":null},"pend_large":{"name":"Large Looped End (towards the load)","sec":"sling","cap":null,"lp":null,"size":null,"note":"Reach pendant","alias":null},"pend_arrow":{"name":"Directional Arrow","sec":"sling","cap":null,"lp":null,"size":null,"note":"Reach pendant","alias":null},"pend_handle":{"name":"Handle","sec":"sling","cap":null,"lp":null,"size":null,"note":"Reach pendant","alias":null},"pend_small":{"name":"Small Looped End (towards the aircraft)","sec":"sling","cap":null,"lp":null,"size":null,"note":"Reach pendant","alias":null},"roundsling":{"name":"Polyester Round Sling","sec":"sling","cap":null,"lp":null,"size":null,"note":"Rated capacity depends on color and hitch type. See the Tables tab.","alias":null},"idtag":{"name":"Identification Tag","sec":"sling","cap":null,"lp":null,"size":null,"note":"At least one must be present and legible","alias":null},"a22":{"name":"A-22 Cargo Bag","sec":"a22","cap":null,"lp":null,"size":null,"note":null,"alias":null},"lateral":{"name":"Lateral Strap","sec":"a22","cap":null,"lp":null,"size":null,"note":null,"alias":null},"strap188":{"name":"188” Strap","sec":"a22","cap":null,"lp":null,"size":"188 inches","note":null,"alias":null},"scuff":{"name":"Scuff Pad","sec":"a22","cap":null,"lp":null,"size":null,"note":null,"alias":null},"canvas":{"name":"Canvas Cover (Optional)","sec":"a22","cap":null,"lp":null,"size":null,"note":null,"alias":null},"web24":{"name":"24” Suspension Web","sec":"a22","cap":550,"lp":null,"size":"24 inches","note":"Rated capacity is 550 lbs each","alias":null},"lacing":{"name":"Lacing Cord","sec":"a22","cap":null,"lp":null,"size":null,"note":null,"alias":null},"exlateral":{"name":"Excess Lateral Strap","sec":"a22","cap":null,"lp":null,"size":null,"note":null,"alias":null},"ex188":{"name":"Excess 188” Strap","sec":"a22","cap":null,"lp":null,"size":null,"note":null,"alias":null},"snap":{"name":"Connector Snap","sec":"a22","cap":null,"lp":null,"size":null,"note":null,"alias":null},"net5":{"name":"5,000 lbs Cargo Net","sec":"nets","cap":5000,"lp":null,"size":"15 ft x 15 ft; mesh 6 in x 6 in","note":null,"alias":null},"lz5":{"name":"Load Zone (5,000 lbs net)","sec":"nets","cap":null,"lp":null,"size":"5 ft x 5 ft","note":null,"alias":null},"net10":{"name":"10,000 lbs Cargo Net","sec":"nets","cap":10000,"lp":null,"size":"18 ft x 18 ft; mesh 7.5 in x 7.5 in","note":null,"alias":null},"lz10":{"name":"Load Zone (10,000 lbs net)","sec":"nets","cap":null,"lp":null,"size":"6 ft x 6 ft","note":null,"alias":null},"liftleg":{"name":"Lifting Leg","sec":"nets","cap":null,"lp":null,"size":null,"note":null,"alias":null},"nethook":{"name":"Hook","sec":"nets","cap":null,"lp":null,"size":null,"note":"Hooks must be taped","alias":null},"netapex":{"name":"Net Apex Fitting","sec":"nets","cap":10000,"lp":null,"size":null,"note":null,"alias":null},"breakaway":{"name":"Breakaway Tie","sec":"nets","cap":null,"lp":null,"size":null,"note":null,"alias":null},"tether":{"name":"Net Apex Tether Cord","sec":"nets","cap":null,"lp":null,"size":null,"note":null,"alias":null},"felt":{"name":"Cattle Hair Felt","sec":"m1101","cap":null,"lp":null,"size":null,"note":null,"alias":null},"t_pbrake":{"name":"Parking Brake","sec":"m1101","cap":null,"lp":null,"size":null,"note":null,"alias":null},"lunette":{"name":"Lunette","sec":"m1101","cap":null,"lp":null,"size":null,"note":null,"alias":null},"frontjack":{"name":"Front Jack","sec":"m1101","cap":null,"lp":null,"size":null,"note":null,"alias":null},"safetychains":{"name":"Safety Chains","sec":"m1101","cap":null,"lp":null,"size":null,"note":null,"alias":null},"t_dataplate":{"name":"Data Plate","sec":"m1101","cap":null,"lp":null,"size":null,"note":null,"alias":null},"lightcable":{"name":"Light Cable","sec":"m1101","cap":null,"lp":null,"size":null,"note":null,"alias":null},"t_cgu":{"name":"CGU-1/B","sec":"m1101","cap":5000,"lp":null,"size":null,"note":null,"alias":null},"t_a7a":{"name":"A7A Strap","sec":"m1101","cap":500,"lp":null,"size":null,"note":null,"alias":null},"t_load":{"name":"Load","sec":"m1101","cap":null,"lp":null,"size":null,"note":null,"alias":null},"stabilizer":{"name":"Stabilizer Leg","sec":"m1101","cap":null,"lp":null,"size":null,"note":null,"alias":null},"tailgate":{"name":"Tailgate Latch","sec":"m1101","cap":null,"lp":null,"size":null,"note":null,"alias":null},"mfgpin":{"name":"Manufactured Pin","sec":"m1101","cap":null,"lp":null,"size":null,"note":null,"alias":null},"turret":{"name":"Turret","sec":"m1151","cap":null,"lp":null,"size":null,"note":null,"alias":null},"h_wheels":{"name":"Wheels","sec":"m1151","cap":null,"lp":null,"size":null,"note":null,"alias":null},"h_fuelcap":{"name":"Fuel Cap","sec":"m1151","cap":null,"lp":null,"size":null,"note":null,"alias":null},"h_hoodlatch":{"name":"Hood Latch","sec":"m1151","cap":null,"lp":null,"size":null,"note":null,"alias":null},"h_dataplate":{"name":"Data Plate","sec":"m1151","cap":null,"lp":null,"size":null,"note":null,"alias":null},"h_cluster":{"name":"Instrument Cluster","sec":"m1151","cap":null,"lp":null,"size":null,"note":null,"alias":null},"h_wheel":{"name":"Steering Wheel","sec":"m1151","cap":null,"lp":null,"size":null,"note":null,"alias":null},"h_cable":{"name":"Cable","sec":"m1151","cap":null,"lp":null,"size":null,"note":null,"alias":null},"h_lock":{"name":"Lock","sec":"m1151","cap":null,"lp":null,"size":null,"note":null,"alias":null},"enginelatch":{"name":"Engine Cover Latch","sec":"m1151","cap":null,"lp":null,"size":null,"note":null,"alias":null},"h_pbrake":{"name":"Parking Brake","sec":"m1151","cap":null,"lp":null,"size":null,"note":null,"alias":null},"transsel":{"name":"Transmission Selector","sec":"m1151","cap":null,"lp":null,"size":null,"note":null,"alias":null},"turretlock":{"name":"Turret Lock","sec":"m1151","cap":null,"lp":null,"size":null,"note":null,"alias":null},"turretlatch":{"name":"Turret Latch","sec":"m1151","cap":null,"lp":null,"size":null,"note":null,"alias":null},"turrethandle":{"name":"Turret Handle","sec":"m1151","cap":null,"lp":null,"size":null,"note":null,"alias":null},"batterylatch":{"name":"Battery Box Latch (under passenger seat)","sec":"m1151","cap":null,"lp":null,"size":null,"note":null,"alias":null},"bezel":{"name":"Bezel Ring","sec":"blivet","cap":null,"lp":null,"size":null,"note":null,"alias":null},"nozzle":{"name":"Fuel Nozzle","sec":"blivet","cap":null,"lp":null,"size":null,"note":null,"alias":null},"nozzle_taped":{"name":"Fuel Nozzle (covered with 2 in tape)","sec":"blivet","cap":null,"lp":null,"size":null,"note":null,"alias":null},"b_clevis58":{"name":"5/8” Screw Pin Clevis","sec":"blivet","cap":4420,"lp":null,"size":null,"note":null,"alias":null},"b_cotter":{"name":"Cotter Pin","sec":"blivet","cap":null,"lp":null,"size":null,"note":null,"alias":null},"clusterbreak":{"name":"Cluster Breakaway","sec":"blivet","cap":null,"lp":null,"size":null,"note":null,"alias":null},"b_fuelcap":{"name":"Fuel Cap","sec":"blivet","cap":null,"lp":null,"size":null,"note":null,"alias":null},"hoodpins":{"name":"Hood Pins","sec":"isv","cap":null,"lp":null,"size":null,"note":null,"alias":null},"i_wheels":{"name":"Wheels","sec":"isv","cap":null,"lp":null,"size":null,"note":null,"alias":null},"wsmount":{"name":"Windshield Mount","sec":"isv","cap":null,"lp":null,"size":null,"note":null,"alias":null},"i_hoodlatch":{"name":"Hood Latch","sec":"isv","cap":null,"lp":null,"size":null,"note":null,"alias":null},"i_cluster":{"name":"Instrument Cluster","sec":"isv","cap":null,"lp":null,"size":null,"note":null,"alias":null},"i_wheel":{"name":"Steering Wheel","sec":"isv","cap":null,"lp":null,"size":null,"note":null,"alias":null},"i_pbrake":{"name":"Parking Brake","sec":"isv","cap":null,"lp":null,"size":null,"note":null,"alias":null},"litter":{"name":"Litter Rail","sec":"isv","cap":null,"lp":null,"size":null,"note":null,"alias":null},"seats":{"name":"Seats Stowed","sec":"isv","cap":null,"lp":null,"size":null,"note":null,"alias":null},"bii":{"name":"BII Box","sec":"isv","cap":null,"lp":null,"size":null,"note":null,"alias":null},"fueldoor":{"name":"Fuel Fill Door","sec":"isv","cap":null,"lp":null,"size":null,"note":null,"alias":null},"rops":{"name":"Roll Over Protection System (ROPS)","sec":"isv","cap":null,"lp":null,"size":null,"note":null,"alias":null}},"figures":[{"id":"f_xxvi","sec":"sling","title":"Aerial Delivery Sling, Type XXVI","img":"img/p1_s004_1.jpg","w":1400,"h":833,"hs":[{"n":"1","x":0.5,"y":0.5,"item":"xxvi"}],"legend":[{"n":"1","item":"xxvi"}],"note":"Rated capacities and available lengths are in the tables below.","tables":["xxvi_cap","xxvi_len"]},{"id":"f_donut","sec":"sling","title":"3 Foot Apex Ring (Donut Ring)","img":"img/p1_s005_0.jpg","w":1247,"h":931,"hs":[{"n":"1","x":0.279,"y":0.354,"item":"donut"},{"n":"2","x":0.5,"y":0.17,"item":"typeiv"}],"legend":[{"n":"1","item":"donut"},{"n":"2","item":"typeiv"}],"note":null,"tables":[]},{"id":"f_typeiv","sec":"sling","title":"Type IV Connector Link","img":"img/p1_s005_3.jpg","w":1080,"h":609,"hs":[{"n":"2","x":0.564,"y":0.2,"item":"typeiv"}],"legend":[{"n":"2","item":"typeiv"}],"note":null,"tables":[]},{"id":"f_typeiv_parts","sec":"sling","title":"Type IV Connector Link, disassembled","img":"img/p1_s005_2.jpg","w":733,"h":382,"hs":[{"n":"3","x":0.2,"y":0.288,"item":"baseplate"},{"n":"4","x":0.525,"y":0.096,"item":"albuffer"},{"n":"4","x":0.424,"y":0.052,"item":"albuffer"},{"n":"5","x":0.711,"y":0.264,"item":"lockplate"}],"legend":[{"n":"3","item":"baseplate"},{"n":"4","item":"albuffer"},{"n":"5","item":"lockplate"}],"note":null,"tables":[]},{"id":"f_cotton","sec":"sling","title":"Cotton Buffer","img":"img/p1_s005_4.jpg","w":477,"h":492,"hs":[{"n":"6","x":0.769,"y":0.692,"item":"cottonbuffer"}],"legend":[{"n":"6","item":"cottonbuffer"}],"note":null,"tables":[]},{"id":"f_twopoint","sec":"sling","title":"Two Point Link Assembly","img":"img/p1_s006_1.jpg","w":1080,"h":609,"hs":[{"n":"1","x":0.228,"y":0.315,"item":"twopoint"}],"legend":[{"n":"1","item":"twopoint"}],"note":null,"tables":[]},{"id":"f_clevis","sec":"sling","title":"Suspension Clevises","img":"img/p1_s007_1.jpg","w":1400,"h":800,"hs":[{"n":"1","x":0.167,"y":0.488,"item":"clevis_s"},{"n":"2","x":0.392,"y":0.268,"item":"clevis_m"},{"n":"3","x":0.833,"y":0.22,"item":"clevis_l"},{"n":"4","x":0.042,"y":0.707,"item":"nut"},{"n":"5","x":0.1,"y":0.756,"item":"bolt"},{"n":"4","x":0.275,"y":0.707,"item":"nut"},{"n":"5","x":0.342,"y":0.756,"item":"bolt"},{"n":"4","x":0.642,"y":0.707,"item":"nut"},{"n":"5","x":0.733,"y":0.756,"item":"bolt"}],"legend":[{"n":"1","item":"clevis_s"},{"n":"2","item":"clevis_m"},{"n":"3","item":"clevis_l"},{"n":"4","item":"nut"},{"n":"5","item":"bolt"}],"note":null,"tables":[]},{"id":"f_tiedown1","sec":"sling","title":"Cargo Tie-Down Equipment","img":"img/p1_s008_1.jpg","w":1400,"h":571,"hs":[{"n":"2","x":0.133,"y":0.213,"item":"friction"},{"n":"1","x":0.333,"y":0.191,"item":"a7a"},{"n":"3","x":0.833,"y":0.191,"item":"cgu"}],"legend":[{"n":"1","item":"a7a"},{"n":"2","item":"friction"},{"n":"3","item":"cgu"}],"note":null,"tables":[]},{"id":"f_tiedown2","sec":"sling","title":"Cargo Tie-Down Equipment: Dacron lashing","img":"img/p1_s009_1.jpg","w":1080,"h":609,"hs":[{"n":"1","x":0.695,"y":0.263,"item":"dacron"},{"n":"2","x":0.254,"y":0.191,"item":"dring"}],"legend":[{"n":"1","item":"dacron"},{"n":"2","item":"dring"}],"note":null,"tables":[]},{"id":"f_binders","sec":"sling","title":"Cargo Tie-Down Equipment: load binders","img":"img/p1_s009_2.jpg","w":1118,"h":840,"hs":[{"n":"3","x":0.344,"y":0.478,"item":"binder_silver"},{"n":"4","x":0.705,"y":0.406,"item":"binder_black"}],"legend":[{"n":"3","item":"binder_silver"},{"n":"4","item":"binder_black"}],"note":null,"tables":[]},{"id":"f_clevis58","sec":"sling","title":"5/8 Inch Screw Pin Clevis","img":"img/p1_s010_0.jpg","w":1400,"h":933,"hs":[{"n":"1","x":0.29,"y":0.307,"item":"screwpin"},{"n":"2","x":0.488,"y":0.466,"item":"cotter"},{"n":"3","x":0.697,"y":0.327,"item":"clevis58"}],"legend":[{"n":"1","item":"screwpin"},{"n":"2","item":"cotter"},{"n":"3","item":"clevis58"}],"note":null,"tables":[]},{"id":"f_leg10","sec":"sling","title":"10,000 lbs Sling Leg","img":"img/p1_s011_1.jpg","w":1400,"h":838,"hs":[{"n":"1","x":0.108,"y":0.31,"item":"apex10"},{"n":"2","x":0.425,"y":0.714,"item":"leg10"},{"n":"3","x":0.667,"y":0.81,"item":"chain"},{"n":"4","x":0.958,"y":0.714,"item":"grabhook"}],"legend":[{"n":"1","item":"apex10"},{"n":"2","item":"leg10"},{"n":"3","item":"chain"},{"n":"4","item":"grabhook"}],"note":null,"tables":[]},{"id":"f_leg25","sec":"sling","title":"25,000 lbs Sling Leg","img":"img/p1_s012_1.jpg","w":1400,"h":843,"hs":[{"n":"1","x":0.083,"y":0.271,"item":"apex25"},{"n":"2","x":0.358,"y":0.708,"item":"leg25"},{"n":"3","x":0.658,"y":0.833,"item":"chain"},{"n":"4","x":0.958,"y":0.625,"item":"grabhook"}],"legend":[{"n":"1","item":"apex25"},{"n":"2","item":"leg25"},{"n":"3","item":"chain"},{"n":"4","item":"grabhook"}],"note":null,"tables":[]},{"id":"f_apex10","sec":"sling","title":"Apex Fitting, 10,000 lbs","img":"img/p1_s013_1.jpg","w":1100,"h":715,"hs":[{"n":"1a","x":0.217,"y":0.487,"item":"apexpin10"},{"n":"2","x":0.4,"y":0.205,"item":"apexspacer"},{"n":"3a","x":0.617,"y":0.205,"item":"apexshackle10"},{"n":"4","x":0.35,"y":0.615,"item":"castnut"},{"n":"5","x":0.433,"y":0.718,"item":"drilledbolt"},{"n":"6","x":0.367,"y":0.769,"item":"cotter"}],"legend":[{"n":"1a","item":"apexpin10"},{"n":"2","item":"apexspacer"},{"n":"3a","item":"apexshackle10"},{"n":"4","item":"castnut"},{"n":"5","item":"drilledbolt"},{"n":"6","item":"cotter"}],"note":null,"tables":[]},{"id":"f_apex25","sec":"sling","title":"Apex Fitting, 25,000 lbs","img":"img/p1_s013_2.jpg","w":1100,"h":715,"hs":[{"n":"1b","x":0.183,"y":0.538,"item":"apexpin25"},{"n":"2","x":0.267,"y":0.256,"item":"apexspacer"},{"n":"3b","x":0.6,"y":0.154,"item":"apexshackle25"},{"n":"4","x":0.317,"y":0.615,"item":"castnut"},{"n":"5","x":0.4,"y":0.692,"item":"drilledbolt"},{"n":"6","x":0.333,"y":0.795,"item":"cotter"}],"legend":[{"n":"1b","item":"apexpin25"},{"n":"2","item":"apexspacer"},{"n":"3b","item":"apexshackle25"},{"n":"4","item":"castnut"},{"n":"5","item":"drilledbolt"},{"n":"6","item":"cotter"}],"note":null,"tables":[]},{"id":"f_grab1","sec":"sling","title":"Grabhook Assembly","img":"img/p1_s014_1.jpg","w":1100,"h":733,"hs":[{"n":"1","x":0.667,"y":0.125,"item":"gh_bolt"},{"n":"2","x":0.7,"y":0.35,"item":"gh_keeper"},{"n":"3","x":0.717,"y":0.75,"item":"gh_hook"},{"n":"4","x":0.417,"y":0.25,"item":"gh_pin"},{"n":"5","x":0.433,"y":0.475,"item":"gh_yoke"},{"n":"7","x":0.45,"y":0.875,"item":"gh_coupling"},{"n":"6","x":0.433,"y":0.575,"item":"gh_eye"}],"legend":[{"n":"1","item":"gh_bolt"},{"n":"2","item":"gh_keeper"},{"n":"3","item":"gh_hook"},{"n":"4","item":"gh_pin"},{"n":"5","item":"gh_yoke"},{"n":"6","item":"gh_eye"},{"n":"7","item":"gh_coupling"}],"note":null,"tables":[]},{"id":"f_grab2","sec":"sling","title":"Grabhook Assembly, side view","img":"img/p1_s014_2.jpg","w":1100,"h":733,"hs":[{"n":"8","x":0.167,"y":0.35,"item":"gh_spacer"},{"n":"9","x":0.35,"y":0.525,"item":"gh_snap"},{"n":"4","x":0.292,"y":0.471,"item":"gh_pin"},{"n":"7","x":0.842,"y":0.7,"item":"gh_coupling"}],"legend":[{"n":"4","item":"gh_pin"},{"n":"7","item":"gh_coupling"},{"n":"8","item":"gh_spacer"},{"n":"9","item":"gh_snap"}],"note":null,"tables":[]},{"id":"f_pend25","sec":"sling","title":"25,000 lbs Cargo Hook Reach Pendant","img":"img/p1_s015_0.jpg","w":1400,"h":331,"hs":[{"n":"1","x":0.2,"y":0.25,"item":"pend_large"},{"n":"2","x":0.408,"y":0.583,"item":"pend_arrow"},{"n":"3","x":0.667,"y":0.222,"item":"pend_handle"},{"n":"4","x":0.833,"y":0.667,"item":"pend_small"}],"legend":[{"n":"1","item":"pend_large"},{"n":"2","item":"pend_arrow"},{"n":"3","item":"pend_handle"},{"n":"4","item":"pend_small"}],"note":null,"tables":[]},{"id":"f_pend11","sec":"sling","title":"11,000 lbs Cargo Hook Reach Pendant","img":"img/p1_s016_0.jpg","w":1400,"h":358,"hs":[{"n":"1","x":0.217,"y":0.694,"item":"pend_large"},{"n":"2","x":0.392,"y":0.583,"item":"pend_arrow"},{"n":"3","x":0.683,"y":0.389,"item":"pend_handle"},{"n":"4","x":0.85,"y":0.722,"item":"pend_small"}],"legend":[{"n":"1","item":"pend_large"},{"n":"2","item":"pend_arrow"},{"n":"3","item":"pend_handle"},{"n":"4","item":"pend_small"}],"note":null,"tables":[]},{"id":"f_round","sec":"sling","title":"Polyester Round Sling","img":"img/p1_s017_1.jpg","w":1187,"h":701,"hs":[{"n":"1","x":0.658,"y":0.128,"item":"idtag"},{"n":"1","x":0.517,"y":0.846,"item":"idtag"}],"legend":[{"n":"1","item":"idtag"}],"note":"Rated capacities by color and hitch type are in the table below.","tables":["round"]},{"id":"f_a22_flat","sec":"a22","title":"A-22 Cargo Bag, sling assembly laid flat","img":"img/p1_s020_0.jpg","w":609,"h":430,"hs":[{"n":"1","x":0.241,"y":0.215,"item":"lateral"},{"n":"1","x":0.828,"y":0.501,"item":"lateral"},{"n":"2","x":0.155,"y":0.764,"item":"strap188"},{"n":"2","x":0.379,"y":0.143,"item":"strap188"},{"n":"3","x":0.431,"y":0.501,"item":"scuff"},{"n":"4","x":0.966,"y":0.406,"item":"dring"},{"n":"4","x":0.621,"y":0.907,"item":"dring"}],"legend":[{"n":"1","item":"lateral"},{"n":"2","item":"strap188"},{"n":"3","item":"scuff"},{"n":"4","item":"dring"}],"note":null,"tables":[]},{"id":"f_a22_cover","sec":"a22","title":"A-22 Cargo Bag, cover and hardware","img":"img/p1_s020_1.jpg","w":614,"h":417,"hs":[{"n":"5","x":0.387,"y":0.405,"item":"canvas"},{"n":"6","x":0.742,"y":0.667,"item":"clevis_m"},{"n":"7","x":0.952,"y":0.762,"item":"web24"},{"n":"7","x":0.97,"y":0.595,"item":"web24"},{"n":"7","x":0.97,"y":0.762,"item":"web24"}],"legend":[{"n":"5","item":"canvas"},{"n":"6","item":"clevis_m"},{"n":"7","item":"web24"}],"note":null,"tables":[]},{"id":"f_a22_rigged","sec":"a22","title":"A-22 Cargo Bag, rigged","img":"img/p1_s021_0.jpg","w":1400,"h":933,"hs":[{"n":"2","x":0.754,"y":0.435,"item":"lacing"},{"n":"2","x":0.285,"y":0.455,"item":"lacing"},{"n":"1","x":0.308,"y":0.135,"item":"lateral"},{"n":"1","x":0.246,"y":0.5,"item":"lateral"},{"n":"1","x":0.285,"y":0.631,"item":"lateral"},{"n":"3","x":0.518,"y":0.282,"item":"strap188"},{"n":"1","x":0.723,"y":0.126,"item":"lateral"},{"n":"1","x":0.761,"y":0.5,"item":"lateral"},{"n":"1","x":0.741,"y":0.756,"item":"lateral"},{"n":"4","x":0.732,"y":0.209,"item":"canvas"}],"legend":[{"n":"1","item":"lateral"},{"n":"2","item":"lacing"},{"n":"3","item":"strap188"},{"n":"4","item":"canvas"}],"note":null,"tables":[]},{"id":"f_a22_corner","sec":"a22","title":"A-22 Cargo Bag, corner","img":"img/p1_s022_0.jpg","w":1400,"h":932,"hs":[{"n":"1","x":0.657,"y":0.8,"item":"lateral"},{"n":"1","x":0.678,"y":0.334,"item":"lateral"},{"n":"2","x":0.612,"y":0.225,"item":"lacing"},{"n":"3","x":0.553,"y":0.434,"item":"friction"},{"n":"3","x":0.589,"y":0.852,"item":"friction"},{"n":"4","x":0.401,"y":0.364,"item":"exlateral"},{"n":"4","x":0.487,"y":0.864,"item":"exlateral"},{"n":"5","x":0.768,"y":0.045,"item":"canvas"}],"legend":[{"n":"1","item":"lateral"},{"n":"2","item":"lacing"},{"n":"3","item":"friction"},{"n":"4","item":"exlateral"},{"n":"5","item":"canvas"}],"note":null,"tables":[]},{"id":"f_a22_side","sec":"a22","title":"A-22 Cargo Bag, lateral strap detail","img":"img/p1_s023_0.jpg","w":1400,"h":932,"hs":[{"n":"1","x":0.655,"y":0.493,"item":"lateral"},{"n":"1","x":0.35,"y":0.445,"item":"lateral"},{"n":"2","x":0.511,"y":0.413,"item":"friction"},{"n":"3","x":0.285,"y":0.493,"item":"exlateral"},{"n":"4","x":0.532,"y":0.935,"item":"lacing"}],"legend":[{"n":"1","item":"lateral"},{"n":"2","item":"friction"},{"n":"3","item":"exlateral"},{"n":"4","item":"lacing"}],"note":null,"tables":[]},{"id":"f_a22_top","sec":"a22","title":"A-22 Cargo Bag, top","img":"img/p1_s024_0.jpg","w":1400,"h":933,"hs":[{"n":"2","x":0.544,"y":0.678,"item":"friction"},{"n":"6","x":0.946,"y":0.377,"item":"canvas"},{"n":"1","x":0.891,"y":0.244,"item":"lateral"},{"n":"4","x":0.568,"y":0.17,"item":"ex188"},{"n":"3","x":0.53,"y":0.305,"item":"strap188"},{"n":"5","x":0.97,"y":0.817,"item":"lacing"},{"n":"1","x":0.852,"y":0.879,"item":"lateral"},{"n":"1","x":0.166,"y":0.864,"item":"lateral"},{"n":"1","x":0.155,"y":0.238,"item":"lateral"},{"n":"3","x":0.548,"y":0.575,"item":"strap188"}],"legend":[{"n":"1","item":"lateral"},{"n":"2","item":"friction"},{"n":"3","item":"strap188"},{"n":"4","item":"ex188"},{"n":"5","item":"lacing"},{"n":"6","item":"canvas"}],"note":null,"tables":[]},{"id":"f_a22_hang","sec":"a22","title":"A-22 Cargo Bag, suspension point","img":"img/p1_s025_0.jpg","w":1400,"h":994,"hs":[{"n":"1","x":0.555,"y":0.185,"item":"clevis_m"},{"n":"3","x":0.529,"y":0.708,"item":"web24"},{"n":"3","x":0.488,"y":0.764,"item":"web24"},{"n":"3","x":0.413,"y":0.803,"item":"web24"},{"n":"3","x":0.433,"y":0.83,"item":"web24"},{"n":"2","x":0.545,"y":0.459,"item":"dring"}],"legend":[{"n":"1","item":"clevis_m"},{"n":"2","item":"dring"},{"n":"3","item":"web24"}],"note":null,"tables":[]},{"id":"f_a22_webs","sec":"a22","title":"24” Suspension Webs on the load","img":"img/p2_s001_0.jpg","w":1400,"h":1238,"hs":[{"n":"1","x":0.658,"y":0.15,"item":"web24"},{"n":"1","x":0.524,"y":0.158,"item":"web24"},{"n":"2","x":0.678,"y":0.513,"item":"snap"},{"n":"2","x":0.5,"y":0.662,"item":"snap"},{"n":"3","x":0.692,"y":0.61,"item":"dring"},{"n":"3","x":0.524,"y":0.778,"item":"dring"},{"n":"3","x":0.372,"y":0.479,"item":"dring"},{"n":"3","x":0.164,"y":0.694,"item":"dring"},{"n":"1","x":0.411,"y":0.176,"item":"web24"},{"n":"1","x":0.339,"y":0.097,"item":"web24"},{"n":"2","x":0.357,"y":0.417,"item":"snap"},{"n":"2","x":0.183,"y":0.581,"item":"snap"}],"legend":[{"n":"1","item":"web24"},{"n":"2","item":"snap"},{"n":"3","item":"dring"}],"note":null,"tables":[]},{"id":"f_web24","sec":"a22","title":"24” Suspension Web","img":"img/p2_s002_0.jpg","w":1400,"h":518,"hs":[{"n":"1","x":0.467,"y":0.761,"item":"web24"},{"n":"2","x":0.054,"y":0.437,"item":"snap"},{"n":"3","x":0.944,"y":0.449,"item":"dring"}],"legend":[{"n":"1","item":"web24"},{"n":"2","item":"snap"},{"n":"3","item":"dring"}],"note":null,"tables":[]},{"id":"f_net5","sec":"nets","title":"5,000 lbs Cargo Net","img":"img/p2_s004_1.jpg","w":1270,"h":465,"hs":[{"n":"1","x":0.333,"y":0.296,"item":"net5"},{"n":"2","x":0.542,"y":0.546,"item":"liftleg"},{"n":"3","x":0.725,"y":0.864,"item":"nethook"},{"n":"5","x":0.583,"y":0.206,"item":"lz5"}],"legend":[{"n":"1","item":"net5"},{"n":"2","item":"liftleg"},{"n":"3","item":"nethook"},{"n":"5","item":"lz5"}],"note":null,"tables":[]},{"id":"f_netapex","sec":"nets","title":"Net Apex Fitting","img":"img/p2_s004_2.jpg","w":257,"h":330,"hs":[{"n":"4","x":0.5,"y":0.5,"item":"netapex"}],"legend":[{"n":"4","item":"netapex"}],"note":null,"tables":[]},{"id":"f_net10","sec":"nets","title":"10,000 lbs Cargo Net","img":"img/p2_s005_1.jpg","w":1270,"h":494,"hs":[{"n":"1","x":0.333,"y":0.349,"item":"net10"},{"n":"2","x":0.633,"y":0.628,"item":"liftleg"},{"n":"3","x":0.833,"y":0.93,"item":"nethook"},{"n":"4","x":0.625,"y":0.186,"item":"lz10"}],"legend":[{"n":"1","item":"net10"},{"n":"2","item":"liftleg"},{"n":"3","item":"nethook"},{"n":"4","item":"lz10"}],"note":null,"tables":[]},{"id":"f_net_rigged","sec":"nets","title":"Cargo Net, rigged","img":"img/p2_s006_0.jpg","w":1400,"h":1073,"hs":[{"n":"1","x":0.055,"y":0.679,"item":"netapex"},{"n":"2","x":0.158,"y":0.765,"item":"nethook"},{"n":"3","x":0.466,"y":0.552,"item":"breakaway"},{"n":"3","x":0.584,"y":0.434,"item":"breakaway"},{"n":"3","x":0.66,"y":0.283,"item":"breakaway"},{"n":"4","x":0.671,"y":0.49,"item":"liftleg"}],"legend":[{"n":"1","item":"netapex"},{"n":"2","item":"nethook"},{"n":"3","item":"breakaway"},{"n":"4","item":"liftleg"}],"note":null,"tables":[]},{"id":"f_net_apex_detail","sec":"nets","title":"Net Apex Fitting, detail","img":"img/p2_s007_0.jpg","w":1400,"h":1084,"hs":[{"n":"1","x":0.101,"y":0.385,"item":"netapex"},{"n":"2","x":0.417,"y":0.808,"item":"tether"},{"n":"3","x":0.465,"y":0.193,"item":"nethook"}],"legend":[{"n":"1","item":"netapex"},{"n":"2","item":"tether"},{"n":"3","item":"nethook"}],"note":"Hooks must be taped (tape omitted in the picture to show the entire hook).","tables":[]},{"id":"f_t_front","sec":"m1101","title":"M1101 Trailer, front","img":"img/p2_s009_0.jpg","w":1400,"h":850,"hs":[{"n":"1","x":0.144,"y":0.219,"item":"felt"},{"n":"1","x":0.814,"y":0.219,"item":"felt"},{"n":"4","x":0.567,"y":0.507,"item":"frontjack"},{"n":"2","x":0.289,"y":0.527,"item":"t_pbrake"},{"n":"2","x":0.68,"y":0.541,"item":"t_pbrake"},{"n":"3","x":0.514,"y":0.809,"item":"lunette"},{"n":"5","x":0.546,"y":0.932,"item":"safetychains"},{"n":"6","x":0.546,"y":0.142,"item":"t_dataplate"}],"legend":[{"n":"1","item":"felt"},{"n":"2","item":"t_pbrake"},{"n":"3","item":"lunette"},{"n":"4","item":"frontjack"},{"n":"5","item":"safetychains"},{"n":"6","item":"t_dataplate"}],"note":null,"tables":[]},{"id":"f_t_tongue","sec":"m1101","title":"M1101 Trailer, tongue hardware","img":"img/p2_s010_0.jpg","w":1400,"h":724,"hs":[{"n":"1","x":0.401,"y":0.374,"item":"lunette"},{"n":"2","x":0.167,"y":0.463,"item":"safetychains"},{"n":"2","x":0.602,"y":0.374,"item":"safetychains"},{"n":"3","x":0.754,"y":0.159,"item":"lightcable"}],"legend":[{"n":"1","item":"lunette"},{"n":"2","item":"safetychains"},{"n":"3","item":"lightcable"}],"note":null,"tables":[]},{"id":"f_t_bed","sec":"m1101","title":"M1101 Trailer, bed with load","img":"img/p2_s011_0.jpg","w":1400,"h":721,"hs":[{"n":"1","x":0.325,"y":0.515,"item":"t_cgu"},{"n":"1","x":0.633,"y":0.564,"item":"t_cgu"},{"n":"2","x":0.65,"y":0.273,"item":"t_a7a"},{"n":"2","x":0.683,"y":0.515,"item":"t_a7a"},{"n":"3","x":0.25,"y":0.483,"item":"t_load"}],"legend":[{"n":"1","item":"t_cgu"},{"n":"2","item":"t_a7a"},{"n":"3","item":"t_load"}],"note":null,"tables":[]},{"id":"f_t_rear","sec":"m1101","title":"M1101 Trailer, rear","img":"img/p2_s012_0.jpg","w":1400,"h":711,"hs":[{"n":"1","x":0.096,"y":0.75,"item":"stabilizer"},{"n":"1","x":0.942,"y":0.674,"item":"stabilizer"},{"n":"2","x":0.202,"y":0.106,"item":"felt"},{"n":"2","x":0.769,"y":0.097,"item":"felt"},{"n":"3","x":0.144,"y":0.151,"item":"tailgate"},{"n":"3","x":0.885,"y":0.147,"item":"tailgate"}],"legend":[{"n":"1","item":"stabilizer"},{"n":"2","item":"felt"},{"n":"3","item":"tailgate"}],"note":null,"tables":[]},{"id":"f_t_rearcorner","sec":"m1101","title":"M1101 Trailer, rear corner","img":"img/p2_s013_0.jpg","w":1400,"h":773,"hs":[{"n":"1","x":0.352,"y":0.184,"item":"mfgpin"},{"n":"1","x":0.462,"y":0.847,"item":"mfgpin"},{"n":"1","x":0.499,"y":0.692,"item":"mfgpin"},{"n":"2","x":0.252,"y":0.138,"item":"tailgate"},{"n":"3","x":0.514,"y":0.965,"item":"stabilizer"}],"legend":[{"n":"1","item":"mfgpin"},{"n":"2","item":"tailgate"},{"n":"3","item":"stabilizer"}],"note":null,"tables":[]},{"id":"f_t_stab","sec":"m1101","title":"M1101 Trailer, stabilizer leg","img":"img/p2_s014_0.jpg","w":1400,"h":725,"hs":[{"n":"1","x":0.51,"y":0.77,"item":"stabilizer"},{"n":"2","x":0.353,"y":0.489,"item":"mfgpin"},{"n":"2","x":0.452,"y":0.202,"item":"mfgpin"}],"legend":[{"n":"1","item":"stabilizer"},{"n":"2","item":"mfgpin"}],"note":null,"tables":[]},{"id":"f_t_felt","sec":"m1101","title":"Cattle Hair Felt","img":"img/p2_s015_0.jpg","w":1400,"h":784,"hs":[{"n":"1","x":0.247,"y":0.418,"item":"felt"},{"n":"1","x":0.668,"y":0.375,"item":"felt"}],"legend":[{"n":"1","item":"felt"}],"note":null,"tables":[]},{"id":"f_h_front","sec":"m1151","title":"M1151, front","img":"img/p2_s017_0.jpg","w":1400,"h":1127,"hs":[{"n":"1","x":0.701,"y":0.145,"item":"turret"},{"n":"2","x":0.749,"y":0.941,"item":"h_wheels"},{"n":"2","x":0.267,"y":0.936,"item":"h_wheels"}],"legend":[{"n":"1","item":"turret"},{"n":"2","item":"h_wheels"}],"note":null,"tables":[]},{"id":"f_h_fuel","sec":"m1151","title":"M1151, fuel cap","img":"img/p2_s018_0.jpg","w":1400,"h":933,"hs":[{"n":"1","x":0.521,"y":0.549,"item":"h_fuelcap"}],"legend":[{"n":"1","item":"h_fuelcap"}],"note":null,"tables":[]},{"id":"f_h_hood","sec":"m1151","title":"M1151, hood latch","img":"img/p2_s019_0.jpg","w":1400,"h":933,"hs":[{"n":"1","x":0.519,"y":0.383,"item":"h_hoodlatch"},{"n":"2","x":0.852,"y":0.529,"item":"h_wheels"}],"legend":[{"n":"1","item":"h_hoodlatch"},{"n":"2","item":"h_wheels"}],"note":null,"tables":[]},{"id":"f_h_data","sec":"m1151","title":"M1151, data plate","img":"img/p2_s020_0.jpg","w":1400,"h":933,"hs":[{"n":"1","x":0.616,"y":0.35,"item":"h_dataplate"}],"legend":[{"n":"1","item":"h_dataplate"}],"note":null,"tables":[]},{"id":"f_h_dash","sec":"m1151","title":"M1151, dash","img":"img/p2_s021_0.jpg","w":1400,"h":996,"hs":[{"n":"2","x":0.204,"y":0.818,"item":"h_wheel"},{"n":"1","x":0.765,"y":0.165,"item":"h_cluster"},{"n":"4","x":0.537,"y":0.909,"item":"h_lock"},{"n":"3","x":0.477,"y":0.804,"item":"h_cable"}],"legend":[{"n":"1","item":"h_cluster"},{"n":"2","item":"h_wheel"},{"n":"3","item":"h_cable"},{"n":"4","item":"h_lock"}],"note":null,"tables":[]},{"id":"f_h_console","sec":"m1151","title":"M1151, center console","img":"img/p2_s022_0.jpg","w":1400,"h":884,"hs":[{"n":"2","x":0.328,"y":0.61,"item":"h_pbrake"},{"n":"1","x":0.146,"y":0.556,"item":"enginelatch"},{"n":"3","x":0.566,"y":0.493,"item":"transsel"},{"n":"1","x":0.63,"y":0.271,"item":"enginelatch"}],"legend":[{"n":"1","item":"enginelatch"},{"n":"2","item":"h_pbrake"},{"n":"3","item":"transsel"}],"note":null,"tables":[]},{"id":"f_h_turretlock","sec":"m1151","title":"M1151, turret lock","img":"img/p2_s023_0.jpg","w":1400,"h":868,"hs":[{"n":"1","x":0.474,"y":0.492,"item":"turretlock"}],"legend":[{"n":"1","item":"turretlock"}],"note":null,"tables":[]},{"id":"f_h_turret","sec":"m1151","title":"M1151, turret ring","img":"img/p2_s024_0.jpg","w":1400,"h":816,"hs":[{"n":"1","x":0.781,"y":0.5,"item":"turretlatch"},{"n":"1","x":0.312,"y":0.679,"item":"turretlatch"},{"n":"2","x":0.474,"y":0.668,"item":"turrethandle"},{"n":"3","x":0.906,"y":0.393,"item":"turretlock"}],"legend":[{"n":"1","item":"turretlatch"},{"n":"2","item":"turrethandle"},{"n":"3","item":"turretlock"}],"note":null,"tables":[]},{"id":"f_h_battery","sec":"m1151","title":"M1151, battery box latch","img":"img/p2_s025_0.jpg","w":1400,"h":933,"hs":[{"n":"1","x":0.73,"y":0.319,"item":"batterylatch"},{"n":"1","x":0.222,"y":0.236,"item":"batterylatch"}],"legend":[{"n":"1","item":"batterylatch"}],"note":null,"tables":[]},{"id":"f_b_end","sec":"blivet","title":"Triple Blivets, end","img":"img/p2_s027_0.jpg","w":1142,"h":1310,"hs":[{"n":"1","x":0.493,"y":0.534,"item":"bezel"},{"n":"2","x":0.472,"y":0.598,"item":"nozzle"},{"n":"3","x":0.629,"y":0.628,"item":"b_clevis58"},{"n":"4","x":0.213,"y":0.186,"item":"clusterbreak"}],"legend":[{"n":"1","item":"bezel"},{"n":"2","item":"nozzle"},{"n":"3","item":"b_clevis58"},{"n":"4","item":"clusterbreak"}],"note":null,"tables":[]},{"id":"f_b_bezel","sec":"blivet","title":"Triple Blivets, bezel ring detail","img":"img/p2_s028_0.jpg","w":1400,"h":1115,"hs":[{"n":"1","x":0.167,"y":0.467,"item":"bezel"},{"n":"2","x":0.423,"y":0.594,"item":"nozzle_taped"},{"n":"4","x":0.89,"y":0.58,"item":"b_clevis58"},{"n":"3","x":0.788,"y":0.539,"item":"b_cotter"}],"legend":[{"n":"1","item":"bezel"},{"n":"2","item":"nozzle_taped"},{"n":"3","item":"b_cotter"},{"n":"4","item":"b_clevis58"}],"note":null,"tables":[]},{"id":"f_b_break","sec":"blivet","title":"Cluster Breakaway","img":"img/p2_s029_0.jpg","w":1400,"h":933,"hs":[{"n":"1","x":0.444,"y":0.752,"item":"clusterbreak"}],"legend":[{"n":"1","item":"clusterbreak"}],"note":null,"tables":[]},{"id":"f_b_cap","sec":"blivet","title":"Fuel Cap","img":"img/p2_s030_0.jpg","w":1400,"h":738,"hs":[{"n":"1","x":0.5,"y":0.55,"item":"b_fuelcap"}],"legend":[{"n":"1","item":"b_fuelcap"}],"note":null,"tables":[]},{"id":"f_i_front","sec":"isv","title":"M1301 ISV, front","img":"img/isv_s002_0.jpg","w":640,"h":481,"hs":[{"n":"2","x":0.688,"y":0.599,"item":"i_wheels"},{"n":"2","x":0.313,"y":0.598,"item":"i_wheels"},{"n":"1","x":0.642,"y":0.311,"item":"hoodpins"},{"n":"1","x":0.342,"y":0.311,"item":"hoodpins"}],"legend":[{"n":"1","item":"hoodpins"},{"n":"2","item":"i_wheels"}],"note":null,"tables":[]},{"id":"f_i_ws","sec":"isv","title":"M1301 ISV, windshield mount and hood latch","img":"img/isv_s003_0.jpg","w":481,"h":640,"hs":[{"n":"1","x":0.427,"y":0.249,"item":"wsmount"},{"n":"2","x":0.44,"y":0.696,"item":"i_hoodlatch"}],"legend":[{"n":"1","item":"wsmount"},{"n":"2","item":"i_hoodlatch"}],"note":null,"tables":[]},{"id":"f_i_cluster","sec":"isv","title":"M1301 ISV, instrument cluster","img":"img/isv_s004_0.jpg","w":640,"h":480,"hs":[{"n":"1","x":0.5,"y":0.42,"item":"i_cluster"}],"legend":[{"n":"1","item":"i_cluster"}],"note":null,"tables":[]},{"id":"f_i_wheel","sec":"isv","title":"M1301 ISV, steering wheel","img":"img/isv_s005_0.jpg","w":481,"h":640,"hs":[{"n":"1","x":0.648,"y":0.352,"item":"i_wheel"}],"legend":[{"n":"1","item":"i_wheel"}],"note":null,"tables":[]},{"id":"f_i_pbrake","sec":"isv","title":"M1301 ISV, parking brake","img":"img/isv_s006_0.jpg","w":481,"h":640,"hs":[{"n":"1","x":0.457,"y":0.455,"item":"i_pbrake"}],"legend":[{"n":"1","item":"i_pbrake"}],"note":null,"tables":[]},{"id":"f_i_litter","sec":"isv","title":"M1301 ISV, litter rail","img":"img/isv_s007_0.jpg","w":481,"h":640,"hs":[{"n":"1","x":0.407,"y":0.199,"item":"litter"},{"n":"1","x":0.594,"y":0.199,"item":"litter"},{"n":"1","x":0.68,"y":0.736,"item":"litter"},{"n":"1","x":0.379,"y":0.751,"item":"litter"}],"legend":[{"n":"1","item":"litter"}],"note":null,"tables":[]},{"id":"f_i_seats","sec":"isv","title":"M1301 ISV, seats stowed and BII box","img":"img/isv_s008_0.jpg","w":640,"h":481,"hs":[{"n":"2","x":0.858,"y":0.845,"item":"bii"},{"n":"1","x":0.726,"y":0.457,"item":"seats"},{"n":"1","x":0.406,"y":0.552,"item":"seats"}],"legend":[{"n":"1","item":"seats"},{"n":"2","item":"bii"}],"note":null,"tables":[]},{"id":"f_i_fuel","sec":"isv","title":"M1301 ISV, fuel fill door","img":"img/isv_s009_0.jpg","w":481,"h":640,"hs":[{"n":"1","x":0.433,"y":0.464,"item":"fueldoor"}],"legend":[{"n":"1","item":"fueldoor"}],"note":null,"tables":[]},{"id":"f_i_rops","sec":"isv","title":"M1301 ISV, ROPS","img":"img/isv_s010_0.jpg","w":640,"h":481,"hs":[{"n":"1","x":0.728,"y":0.419,"item":"rops"},{"n":"1","x":0.53,"y":0.419,"item":"rops"},{"n":"1","x":0.335,"y":0.41,"item":"rops"}],"legend":[{"n":"1","item":"rops"}],"note":null,"tables":[]}],"tables":{"xxvi_cap":{"title":"Type XXVI Multi-Loop Line: rated capacity","cols":["Loops","Pendant","Lifting Provision"],"rows":[["2","8,900 lbs","5,600 lbs"],["3","13,500 lbs","8,500 lbs"],["4","17,800 lbs","11,200 lbs"],["6","27,000 lbs","17,000 lbs"]]},"xxvi_len":{"title":"Type XXVI Multi-Loop Line: lengths available","cols":["Loops","Lengths"],"rows":[["2","3’, 9’, 11’, 12’, 16’, 20’, and 120’"],["3","60’ and 140’"],["4","3’, 9’, 11’, 12’, 16’, 20’, and 28’"],["6","60’ and 120’"]]},"round":{"title":"Polyester Round Sling: rated capacity by hitch type","cols":["Length","Color","Choked","Vertical","Basket","Sling Weight"],"rows":[["8’","Green","4,200 lbs","5,300 lbs","10,600 lbs","4 lbs"],["17’","Green","4,200 lbs","5,300 lbs","10,600 lbs","10 lbs"],["8’","Yellow","6,700 lbs","8,400 lbs","16,800 lbs","5 lbs"],["17’","Yellow","6,700 lbs","8,400 lbs","16,800 lbs","11 lbs"],["30’","Red","10,600 lbs","13,200 lbs","26,400 lbs","26 lbs"],["65’","Blue","17,000 lbs","21,200 lbs","42,400 lbs","75 lbs"],["70’","Blue","17,000 lbs","21,200 lbs","42,400 lbs","81 lbs"]]}},"facts":[{"id":"xxvi_p2","q":"Type XXVI, 2-loop, used as a pendant: rated capacity?","a":"8,900 lbs","pool":"xxvi","sec":"sling"},{"id":"xxvi_l2","q":"Type XXVI, 2-loop, used as a lifting provision: rated capacity?","a":"5,600 lbs","pool":"xxvi","sec":"sling"},{"id":"xxvi_p3","q":"Type XXVI, 3-loop, used as a pendant: rated capacity?","a":"13,500 lbs","pool":"xxvi","sec":"sling"},{"id":"xxvi_l3","q":"Type XXVI, 3-loop, used as a lifting provision: rated capacity?","a":"8,500 lbs","pool":"xxvi","sec":"sling"},{"id":"xxvi_p4","q":"Type XXVI, 4-loop, used as a pendant: rated capacity?","a":"17,800 lbs","pool":"xxvi","sec":"sling"},{"id":"xxvi_l4","q":"Type XXVI, 4-loop, used as a lifting provision: rated capacity?","a":"11,200 lbs","pool":"xxvi","sec":"sling"},{"id":"xxvi_p6","q":"Type XXVI, 6-loop, used as a pendant: rated capacity?","a":"27,000 lbs","pool":"xxvi","sec":"sling"},{"id":"xxvi_l6","q":"Type XXVI, 6-loop, used as a lifting provision: rated capacity?","a":"17,000 lbs","pool":"xxvi","sec":"sling"},{"id":"xxvi_len2","q":"Type XXVI, 2-loop: which lengths are available?","a":"3’, 9’, 11’, 12’, 16’, 20’, and 120’","pool":"xxvi_len","sec":"sling"},{"id":"xxvi_len3","q":"Type XXVI, 3-loop: which lengths are available?","a":"60’ and 140’","pool":"xxvi_len","sec":"sling"},{"id":"xxvi_len4","q":"Type XXVI, 4-loop: which lengths are available?","a":"3’, 9’, 11’, 12’, 16’, 20’, and 28’","pool":"xxvi_len","sec":"sling"},{"id":"xxvi_len6","q":"Type XXVI, 6-loop: which lengths are available?","a":"60’ and 120’","pool":"xxvi_len","sec":"sling"},{"id":"rs_Green_ch","q":"Green polyester round sling, choked hitch: rated capacity?","a":"4,200 lbs","pool":"round","sec":"sling"},{"id":"rs_Green_v","q":"Green polyester round sling, vertical hitch: rated capacity?","a":"5,300 lbs","pool":"round","sec":"sling"},{"id":"rs_Green_b","q":"Green polyester round sling, basket hitch: rated capacity?","a":"10,600 lbs","pool":"round","sec":"sling"},{"id":"rs_Yellow_ch","q":"Yellow polyester round sling, choked hitch: rated capacity?","a":"6,700 lbs","pool":"round","sec":"sling"},{"id":"rs_Yellow_v","q":"Yellow polyester round sling, vertical hitch: rated capacity?","a":"8,400 lbs","pool":"round","sec":"sling"},{"id":"rs_Yellow_b","q":"Yellow polyester round sling, basket hitch: rated capacity?","a":"16,800 lbs","pool":"round","sec":"sling"},{"id":"rs_Red_ch","q":"Red polyester round sling, choked hitch: rated capacity?","a":"10,600 lbs","pool":"round","sec":"sling"},{"id":"rs_Red_v","q":"Red polyester round sling, vertical hitch: rated capacity?","a":"13,200 lbs","pool":"round","sec":"sling"},{"id":"rs_Red_b","q":"Red polyester round sling, basket hitch: rated capacity?","a":"26,400 lbs","pool":"round","sec":"sling"},{"id":"rs_Blue_ch","q":"Blue polyester round sling, choked hitch: rated capacity?","a":"17,000 lbs","pool":"round","sec":"sling"},{"id":"rs_Blue_v","q":"Blue polyester round sling, vertical hitch: rated capacity?","a":"21,200 lbs","pool":"round","sec":"sling"},{"id":"rs_Blue_b","q":"Blue polyester round sling, basket hitch: rated capacity?","a":"42,400 lbs","pool":"round","sec":"sling"},{"id":"rs_len_8’","q":"What color is the 8’ polyester round sling?","a":"Green","pool":"color","sec":"sling"},{"id":"rs_len_17’","q":"What color is the 17’ polyester round sling?","a":"Green","pool":"color","sec":"sling"},{"id":"rs_len_8’","q":"What color is the 8’ polyester round sling?","a":"Yellow","pool":"color","sec":"sling"},{"id":"rs_len_17’","q":"What color is the 17’ polyester round sling?","a":"Yellow","pool":"color","sec":"sling"},{"id":"rs_len_30’","q":"What color is the 30’ polyester round sling?","a":"Red","pool":"color","sec":"sling"},{"id":"rs_len_65’","q":"What color is the 65’ polyester round sling?","a":"Blue","pool":"color","sec":"sling"},{"id":"rs_len_70’","q":"What color is the 70’ polyester round sling?","a":"Blue","pool":"color","sec":"sling"},{"id":"sz_net5","q":"5,000 lbs cargo net: overall size?","a":"15 ft x 15 ft","pool":"netsize","sec":"nets"},{"id":"sz_net5m","q":"5,000 lbs cargo net: mesh size?","a":"6 in x 6 in","pool":"mesh","sec":"nets"},{"id":"sz_lz5","q":"5,000 lbs cargo net: load zone size?","a":"5 ft x 5 ft","pool":"netsize","sec":"nets"},{"id":"sz_net10","q":"10,000 lbs cargo net: overall size?","a":"18 ft x 18 ft","pool":"netsize","sec":"nets"},{"id":"sz_net10m","q":"10,000 lbs cargo net: mesh size?","a":"7.5 in x 7.5 in","pool":"mesh","sec":"nets"},{"id":"sz_lz10","q":"10,000 lbs cargo net: load zone size?","a":"6 ft x 6 ft","pool":"netsize","sec":"nets"},{"id":"sz_pin10","q":"Apex fitting pin for the 10,000 lbs apex fitting: diameter?","a":"1 1/8 inch","pool":"pin","sec":"sling"},{"id":"sz_pin25","q":"Apex fitting pin for the 25,000 lbs apex fitting: diameter?","a":"1 1/2 inch","pool":"pin","sec":"sling"},{"id":"sz_bolt","q":"Drilled bolt in the apex fitting: size?","a":"3/8 inch","pool":"pin","sec":"sling"},{"id":"sz_clevis","q":"Screw pin clevis used on the blivets and tie-down equipment: size?","a":"5/8 inch","pool":"pin","sec":"sling"},{"id":"sz_web","q":"Suspension web on the A-22 cargo bag: length?","a":"24 inches","pool":"len","sec":"a22"},{"id":"sz_188","q":"Long strap on the A-22 cargo bag: length?","a":"188 inches","pool":"len","sec":"a22"},{"id":"sz_dacron","q":"Dacron lashing tie-down strap: length?","a":"15 feet","pool":"len","sec":"sling"},{"id":"sz_donut","q":"Apex ring (donut ring): size?","a":"3 feet","pool":"len","sec":"sling"},{"id":"sz_tape","q":"Blivet fuel nozzle is covered with tape of what width?","a":"2 inches","pool":"len","sec":"blivet"}],"pools":{"xxvi":["8,900 lbs","5,600 lbs","13,500 lbs","8,500 lbs","17,800 lbs","11,200 lbs","27,000 lbs","17,000 lbs"],"xxvi_len":["3’, 9’, 11’, 12’, 16’, 20’, and 120’","60’ and 140’","3’, 9’, 11’, 12’, 16’, 20’, and 28’","60’ and 120’"],"round":["10,600 lbs","13,200 lbs","16,800 lbs","17,000 lbs","21,200 lbs","26,400 lbs","4,200 lbs","42,400 lbs","5,300 lbs","6,700 lbs","8,400 lbs"],"color":["Green","Yellow","Red","Blue"],"netsize":["15 ft x 15 ft","18 ft x 18 ft","5 ft x 5 ft","6 ft x 6 ft","12 ft x 12 ft","20 ft x 20 ft"],"mesh":["6 in x 6 in","7.5 in x 7.5 in","5 in x 5 in","8 in x 8 in","4 in x 4 in"],"pin":["1 1/8 inch","1 1/2 inch","3/8 inch","5/8 inch","1 1/4 inch","3/4 inch","1/2 inch"],"len":["24 inches","188 inches","15 feet","3 feet","2 inches","20 feet","12 inches","36 inches","120 inches","4 feet"]}};
+const TARGET = new Date(2026, 10, 9); // 9 NOV 2026
+const SEC = Object.fromEntries(DATA.sections.map(s => [s.id, s]));
+const ITEMS = DATA.items, FIGS = DATA.figures, FACTS = DATA.facts, POOLS = DATA.pools;
+const FIG_BY_ID = Object.fromEntries(FIGS.map(f => [f.id, f]));
+const fmt = n => n == null ? null : n.toLocaleString('en-US') + ' lbs';
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+/* ---------- progress store (Leitner boxes 0..4) ---------- */
+let STATS = {};
+try { STATS = JSON.parse(localStorage.getItem('pfnom.stats') || '{}') || {}; } catch (e) { STATS = {}; }
+let PREFS = {};
+try { PREFS = JSON.parse(localStorage.getItem('pfnom.prefs') || '{}') || {}; } catch (e) { PREFS = {}; }
+function save() { try { localStorage.setItem('pfnom.stats', JSON.stringify(STATS)); localStorage.setItem('pfnom.prefs', JSON.stringify(PREFS)); } catch (e) { } }
+function stat(k) { return STATS[k] || (STATS[k] = { box: 0, seen: 0, right: 0, wrong: 0, last: 0 }); }
+function mark(k, ok) { const s = stat(k); s.seen++; s.last = Date.now(); if (ok) { s.right++; s.box = Math.min(4, s.box + 1); } else { s.wrong++; s.box = 0; } save(); updateMastery(); }
+// Every testable key: item ids with a hotspot (nomenclature), item ids with a cap (cap:), fact ids (fact:)
+function allKeys(secs) {
+  const keys = [];
+  const shown = new Set(FIGS.flatMap(f => f.hs.map(h => h.item)));
+  for (const [id, it] of Object.entries(ITEMS)) {
+    if (secs && !secs.has(it.sec)) continue;
+    if (shown.has(id)) keys.push('name:' + id);
+    if (it.cap != null || it.lp != null) keys.push('cap:' + id);
+  }
+  for (const f of FACTS) if (!secs || secs.has(f.sec)) keys.push('fact:' + f.id);
+  return keys;
+}
+function keySec(k) { const [t, id] = k.split(':'); return t === 'fact' ? FACTS.find(f => f.id === id).sec : ITEMS[id].sec; }
+function keyLabel(k) { const [t, id] = k.split(':'); if (t === 'fact') return FACTS.find(f => f.id === id).q; return ITEMS[id].name + (t === 'cap' ? ' (capacity)' : ''); }
+function updateMastery() {
+  const keys = allKeys(); const m = keys.filter(k => stat(k).box >= 3).length;
+  const p = Math.round(100 * m / keys.length);
+  $('#mBar').style.width = p + '%'; $('#mPct').textContent = p + '%';
+}
+/* countdown */
+(function () { const now = new Date(); const d = Math.ceil((TARGET - new Date(now.getFullYear(), now.getMonth(), now.getDate())) / 86400000); $('#cdNum').textContent = d > 0 ? d : (d === 0 ? 'Today' : '0'); if (d <= 0) $('#cdLbl').innerHTML = d === 0 ? 'is<br>9 NOV' : 'past<br>9 NOV'; })();
+
+/* ---------- tabs ---------- */
+$$('.tabs [role=tab]').forEach(b => b.addEventListener('click', () => showTab(b.dataset.tab)));
+function showTab(t) {
+  $$('.tabs [role=tab]').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === t));
+  $$('.view').forEach(v => v.classList.toggle('on', v.id === 'v-' + t));
+  if (t === 'progress') renderProgress();
+  if (t === 'cards' && !fcCur) nextCard();
+  window.scrollTo({ top: 0 });
+}
+let toastT; function toast(m) { const t = $('#toast'); t.textContent = m; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 1600); }
+
+/* ---------- photo renderer ---------- */
+// mode: 'study' (numbers + callout), 'mark' (one hotspot highlighted, others dim, no numbers), 'find' (blank dots, clickable), 'mark-all'
+function renderPhoto(el, fig, opts = {}) {
+  el.innerHTML = '';
+  const img = document.createElement('img'); img.src = fig.img; img.alt = fig.title; img.width = fig.w; img.height = fig.h; img.draggable = false;
+  el.appendChild(img);
+  fig.hs.forEach((h, i) => {
+    const b = document.createElement('button'); b.className = 'hs'; b.style.left = (h.x * 100) + '%'; b.style.top = (h.y * 100) + '%';
+    b.dataset.i = i; b.dataset.item = h.item; b.dataset.n = h.n;
+    if (opts.mode === 'find') { b.classList.add('blank'); b.setAttribute('aria-label', 'marker ' + (i + 1)); }
+    else if (opts.mode === 'mark') { b.classList.add('blank'); if (h.item === opts.item) b.classList.add('target'); else b.classList.add('dim'); b.disabled = true; }
+    else { b.textContent = h.n; b.setAttribute('aria-label', 'callout ' + h.n); }
+    if (opts.onClick) b.addEventListener('click', e => { e.stopPropagation(); opts.onClick(h, b); });
+    el.appendChild(b);
+  });
+  return el;
+}
+
+/* ---------- STUDY ---------- */
+let stIdx = PREFS.fig || 0, labelsHidden = false, stSel = null;
+function buildFigList() {
+  const el = $('#figlist'); el.innerHTML = '';
+  let group = null, lastSec = null;
+  FIGS.forEach((f, i) => {
+    if (f.sec !== lastSec) {
+      const h = document.createElement('button'); h.className = 'grp'; h.dataset.sec = f.sec; h.setAttribute('aria-expanded', 'false');
+      const count = FIGS.filter(x => x.sec === f.sec).length;
+      h.innerHTML = `<span class="chev"></span><span>${esc(SEC[f.sec].name)}</span><span class="cnt num">${count}</span>`;
+      h.addEventListener('click', () => toggleGroup_(f.sec));
+      el.appendChild(h);
+      group = document.createElement('div'); group.className = 'grpbody'; group.dataset.sec = f.sec; group.hidden = true; el.appendChild(group);
+      lastSec = f.sec;
+    }
+    const b = document.createElement('button'); b.dataset.i = i;
+    const done = f.hs.every(h => stat('name:' + h.item).box >= 3);
+    b.innerHTML = `<span class="k">${i + 1}</span><span>${esc(f.title)}</span><span class="m ${done ? 'done' : ''}"></span>`;
+    b.addEventListener('click', () => showFig(i)); group.appendChild(b);
+  });
+}
+function toggleGroup_(sec, force) {
+  const h = $(`#figlist .grp[data-sec="${sec}"]`), body = $(`#figlist .grpbody[data-sec="${sec}"]`);
+  const open = force != null ? force : body.hidden;
+  body.hidden = !open; h.setAttribute('aria-expanded', open);
+}
+function itemDetail(it) {
+  const parts = [];
+  if (it.cap != null) parts.push(`<span><i>Rated</i>${fmt(it.cap)}</span>`);
+  if (it.lp != null) parts.push(`<span><i>Lift prov.</i>${fmt(it.lp)}</span>`);
+  if (it.size) parts.push(`<span><i>Size</i>${esc(it.size)}</span>`);
+  return parts.join('');
+}
+function showFig(i) {
+  stIdx = (i + FIGS.length) % FIGS.length; PREFS.fig = stIdx; save(); stSel = null;
+  const f = FIGS[stIdx];
+  $('#stSec').textContent = SEC[f.sec].name; $('#stTitle').textContent = f.title;
+  DATA.sections.forEach(s => toggleGroup_(s.id, s.id === f.sec));
+  $$('#figlist .grpbody button').forEach(b => { b.setAttribute('aria-current', +b.dataset.i === stIdx); if (+b.dataset.i === stIdx) b.scrollIntoView({ block: 'nearest' }); });
+  renderPhoto($('#stPhoto'), f, { mode: 'study', onClick: (h, b) => selectHS(h.n) });
+  const lg = $('#stLegend'); lg.innerHTML = ''; lg.classList.toggle('hidden', labelsHidden);
+  f.legend.forEach(l => {
+    const it = ITEMS[l.item]; const b = document.createElement('button'); b.dataset.n = l.n;
+    const dt = [it.cap != null ? `Rated <b>${fmt(it.cap)}</b>` : '', it.lp != null ? `Lift prov. <b>${fmt(it.lp)}</b>` : '', it.size ? `Size <b>${esc(it.size)}</b>` : ''].filter(Boolean).join(' · ');
+    b.innerHTML = `<span class="n">${l.n}</span><span><div class="nm">${esc(it.name)}</div>${dt ? `<div class="dt">${dt}</div>` : ''}${it.note ? `<div class="dt">${esc(it.note)}</div>` : ''}</span>`;
+    b.addEventListener('click', () => selectHS(l.n)); lg.appendChild(b);
+  });
+  const n = $('#stNote'); n.hidden = !f.note; n.textContent = f.note || '';
+  $('#stTables').innerHTML = (f.tables || []).map(t => renderTable(DATA.tables[t])).join('');
+}
+function selectHS(n) {
+  const f = FIGS[stIdx]; stSel = (stSel === n) ? null : n;
+  $$('#stPhoto .hs').forEach(b => b.classList.toggle('sel', b.dataset.n === stSel));
+  $$('#stLegend button').forEach(b => { b.setAttribute('aria-current', b.dataset.n === stSel); if (labelsHidden) b.classList.toggle('reveal', b.dataset.n === stSel); });
+  const old = $('#stPhoto .callout'); if (old) old.remove();
+  if (stSel) {
+    const it = ITEMS[f.legend.find(l => l.n === stSel).item];
+    const c = document.createElement('div'); c.className = 'callout';
+    c.innerHTML = `<b>${stSel}. ${esc(it.name)}</b><div class="d">${itemDetail(it)}</div>`;
+    $('#stPhoto').appendChild(c);
+  }
+}
+$('#stPrev').addEventListener('click', () => showFig(stIdx - 1));
+$('#stNext').addEventListener('click', () => showFig(stIdx + 1));
+$('#toggleLabels').addEventListener('click', () => { labelsHidden = !labelsHidden; $('#toggleLabels').setAttribute('aria-pressed', labelsHidden); $('#toggleLabels').textContent = labelsHidden ? 'Show names' : 'Hide names (self-test)'; showFig(stIdx); });
+$('#stPhoto').addEventListener('click', () => { if (stSel) selectHS(stSel); });
+
+/* ---------- section chip groups ---------- */
+function chipGroup(el, defaults) {
+  DATA.sections.forEach(s => { const b = document.createElement('button'); b.className = 'chip'; b.dataset.s = s.id; b.textContent = s.short; b.setAttribute('aria-pressed', defaults.has(s.id)); el.appendChild(b); });
+  el.addEventListener('click', e => { const b = e.target.closest('.chip'); if (!b) return; b.setAttribute('aria-pressed', b.getAttribute('aria-pressed') !== 'true'); el.dispatchEvent(new Event('change')); });
+}
+const pressed = el => new Set($$('.chip[aria-pressed="true"]', el).map(b => b.dataset.s || b.dataset.t || b.dataset.n));
+function toggleGroup(el) { el.addEventListener('click', e => { const b = e.target.closest('.chip'); if (!b) return; if (el.id === 'qLen') { $$('.chip', el).forEach(x => x.setAttribute('aria-pressed', x === b)); } else b.setAttribute('aria-pressed', b.getAttribute('aria-pressed') !== 'true'); el.dispatchEvent(new Event('change')); }); }
+
+/* ---------- question builders ---------- */
+const CAP_POOL = [...new Set(Object.values(ITEMS).flatMap(i => [i.cap, i.lp]).filter(v => v != null))].sort((a, b) => a - b);
+function figureFor(itemId) {
+  const fs = FIGS.filter(f => f.hs.some(h => h.item === itemId)); if (fs.length) return pick(fs);
+  const subj = { pendant25: 'f_pend25', pendant11: 'f_pend11', roundsling: 'f_round', a22: 'f_a22_rigged', xxvi: 'f_xxvi' }[itemId];
+  return subj ? FIG_BY_ID[subj] : null;
+}
+function distinctNames(correct, sec, n) {
+  const pool = shuffle(Object.entries(ITEMS).filter(([id, it]) => it.sec === sec && it.name !== correct.name).map(([, it]) => it.name));
+  const out = []; for (const nm of pool) { if (!out.includes(nm)) out.push(nm); if (out.length === n) break; }
+  if (out.length < n) for (const it of shuffle(Object.values(ITEMS))) { if (it.name !== correct.name && !out.includes(it.name)) out.push(it.name); if (out.length === n) break; }
+  return out;
+}
+function qName(itemId) {
+  const it = ITEMS[itemId]; const f = figureFor(itemId); if (!f) return null;
+  return { type: 'name', key: 'name:' + itemId, fig: f, item: itemId, prompt: 'What is the marked part?', answer: it.name, choices: shuffle([it.name, ...distinctNames(it, it.sec, 3)]) };
+}
+function qCap(itemId) {
+  const it = ITEMS[itemId]; const useLP = it.lp != null && it.cap != null && Math.random() < 0.5;
+  const ans = useLP ? it.lp : it.cap; const f = figureFor(itemId);
+  const wrong = shuffle(CAP_POOL.filter(v => v !== ans)).slice(0, 3);
+  return { type: 'cap', key: 'cap:' + itemId, fig: f, item: itemId, prompt: `${it.name}: ${useLP ? 'lifting provision' : 'rated capacity'}?`, answer: fmt(ans), choices: shuffle([ans, ...wrong].map(fmt)), sub: it.name };
+}
+function qFact(fact) {
+  const wrong = shuffle(POOLS[fact.pool].filter(v => v !== fact.a)).slice(0, 3);
+  return { type: 'fact', key: 'fact:' + fact.id, prompt: fact.q, answer: fact.a, choices: shuffle([fact.a, ...wrong]) };
+}
+function qFind(fig) {
+  const items = [...new Set(fig.hs.map(h => h.item))]; const target = pick(items);
+  return { type: 'find', key: 'name:' + target, fig, item: target, prompt: `Tap the ${ITEMS[target].name}`, answer: ITEMS[target].name };
+}
+function weight(k) { const s = stat(k); return [8, 5, 3, 1.5, 1][s.box] + (s.wrong ? 2 : 0); }
+function weightedPick(list, keyOf) { const w = list.map(x => weight(keyOf(x))); let r = Math.random() * w.reduce((a, b) => a + b, 0); for (let i = 0; i < list.length; i++) { r -= w[i]; if (r <= 0) return list[i]; } return list[list.length - 1]; }
+
+/* ---------- FLASHCARDS ---------- */
+chipGroup($('#fcSecs'), new Set(DATA.sections.map(s => s.id)));
+toggleGroup($('#fcTypes'));
+let fcCur = null, fcFlipped = false;
+let fcPhotoMode = ['front', 'back', 'off'].includes(PREFS.fcPhoto) ? PREFS.fcPhoto : 'front';
+$$('#fcPhoto .chip').forEach(b => b.setAttribute('aria-pressed', b.dataset.p === fcPhotoMode));
+$('#fcPhoto').addEventListener('click', e => { const b = e.target.closest('.chip'); if (!b) return; fcPhotoMode = b.dataset.p; PREFS.fcPhoto = fcPhotoMode; save(); $$('#fcPhoto .chip').forEach(x => x.setAttribute('aria-pressed', x === b)); nextCard(); });
+$('#fcSecs').addEventListener('change', nextCard); $('#fcTypes').addEventListener('change', nextCard);
+function nextCard() {
+  const secs = pressed($('#fcSecs')), types = pressed($('#fcTypes'));
+  const shown = new Set(FIGS.flatMap(f => f.hs.map(h => h.item)));
+  const cands = [];
+  for (const [id, it] of Object.entries(ITEMS)) {
+    if (!secs.has(it.sec)) continue;
+    if (types.has('name') && shown.has(id) && fcPhotoMode !== 'off') cands.push({ k: 'name:' + id, mk: () => qName(id) });
+    if (types.has('cap') && (it.cap != null || it.lp != null)) cands.push({ k: 'cap:' + id, mk: () => qCap(id) });
+  }
+  if (types.has('fact')) for (const f of FACTS) if (secs.has(f.sec)) cands.push({ k: 'fact:' + f.id, mk: () => qFact(f) });
+  const el = $('#fcCard'), act = $('#fcActions'); act.innerHTML = '';
+  if (!cands.length) { fcCur = null; el.innerHTML = '<div class="card"><div class="empty">Pick at least one section and one card type.</div></div>'; return; }
+  let c = weightedPick(cands, x => x.k); if (fcCur && c.k === fcCur.key && cands.length > 1) c = weightedPick(cands.filter(x => x.k !== fcCur.key), x => x.k);
+  fcCur = c.mk(); fcFlipped = false; renderCard();
+}
+function renderCard() {
+  const q = fcCur, s = stat(q.key), el = $('#fcCard'), act = $('#fcActions');
+  const meter = `<div class="meter">${[1, 2, 3, 4].map(i => `<i class="${s.box >= i ? 'b' + i : ''}"></i>`).join('')}</div>`;
+  const it = q.item ? ITEMS[q.item] : null;
+  // Where the photo goes: front (as asked), back (reveal on flip), or nowhere.
+  const hasPhoto = !!q.fig && fcPhotoMode !== 'off';
+  const photoOnFront = hasPhoto && fcPhotoMode === 'front';
+  const photoOnBack = hasPhoto && fcPhotoMode === 'back';
+  const reversed = q.type === 'name' && !photoOnFront; // name card without a photo up front: recall the part from its name
+  const prompt = reversed ? `${it.name}: picture it. What does it look like, and where is it?` : q.prompt;
+  const photoBox = `<div class="photo" id="fcPhotoBox"></div>`;
+  let ans;
+  if (q.type === 'name') ans = reversed
+    ? `${photoOnBack ? photoBox : ''}<div class="d">${itemDetail(it) || '<span><i>Nomenclature only</i></span>'}</div>${it.note ? `<div class="hint">${esc(it.note)}</div>` : ''}`
+    : `<b>${esc(it.name)}</b><div class="d">${itemDetail(it) || '<span><i>Nomenclature only</i></span>'}</div>${it.note ? `<div class="hint">${esc(it.note)}</div>` : ''}`;
+  else ans = `${photoOnBack ? photoBox : ''}<b>${esc(q.answer)}</b>${it && it.note ? `<div class="hint">${esc(it.note)}</div>` : ''}`;
+  el.innerHTML = `<div class="card"><div class="q"><b>${esc(prompt)}</b><span class="eyebrow">${esc(SEC[keySec(q.key)].short)}</span></div><div class="body">${photoOnFront ? photoBox : ''}${fcFlipped ? `<div class="ans">${ans}</div>` : ''}${meter}</div></div>`;
+  const pb = $('#fcPhotoBox'); if (pb) renderPhoto(pb, q.fig, { mode: 'mark', item: q.item });
+  if (!fcFlipped) act.innerHTML = `<button class="btn primary" id="fcFlip">Show answer</button><button class="btn quiet" id="fcSkip">Skip</button>`;
+  else act.innerHTML = `<button class="btn bad" id="fcMiss">Missed it</button><button class="btn good" id="fcGot">Got it</button>`;
+  const flip = $('#fcFlip'); if (flip) flip.addEventListener('click', () => { fcFlipped = true; renderCard(); });
+  const skip = $('#fcSkip'); if (skip) skip.addEventListener('click', nextCard);
+  const miss = $('#fcMiss'); if (miss) miss.addEventListener('click', () => { mark(q.key, false); nextCard(); });
+  const got = $('#fcGot'); if (got) got.addEventListener('click', () => { mark(q.key, true); nextCard(); });
+  const card = $('#fcCard .card'); if (!fcFlipped) card.addEventListener('click', () => { fcFlipped = true; renderCard(); });
+}
+
+/* ---------- QUIZ ---------- */
+chipGroup($('#qSecs'), new Set(DATA.sections.map(s => s.id)));
+toggleGroup($('#qTypes')); toggleGroup($('#qLen'));
+let Q = null;
+function buildQuiz(n, secs, types, weakOnly) {
+  const shown = new Set(FIGS.flatMap(f => f.hs.map(h => h.item)));
+  let cands = [];
+  for (const [id, it] of Object.entries(ITEMS)) {
+    if (!secs.has(it.sec)) continue;
+    if (shown.has(id)) { if (types.has('name')) cands.push({ k: 'name:' + id, mk: () => qName(id) }); if (types.has('find')) cands.push({ k: 'name:' + id, mk: () => { const f = figureFor(id); return (new Set(f.hs.map(h => h.item)).size >= 2) ? { ...qFind(f), item: id, key: 'name:' + id, prompt: `Tap the ${it.name}`, answer: it.name } : qName(id); } }); }
+    if (types.has('cap') && (it.cap != null || it.lp != null)) cands.push({ k: 'cap:' + id, mk: () => qCap(id) });
+  }
+  if (types.has('fact')) for (const f of FACTS) if (secs.has(f.sec)) cands.push({ k: 'fact:' + f.id, mk: () => qFact(f) });
+  if (weakOnly) { const w = cands.filter(c => { const s = stat(c.k); return s.box < 3; }); if (w.length) cands = w; }
+  // weak items float to the top for partial quizzes, with some randomness so runs differ
+  cands = cands.map(c => ({ c, s: weight(c.k) + Math.random() * 6 })).sort((a, b) => b.s - a.s).map(x => x.c);
+  const picked = []; const seen = new Set();
+  for (const c of cands) { if (picked.length >= n) break; if (seen.has(c.k) && n < cands.length) continue; seen.add(c.k); picked.push(c); }
+  return shuffle(picked).map(c => c.mk()).filter(Boolean);
+}
+function startQuiz(weakOnly) {
+  const n = +[...pressed($('#qLen'))][0] || 20, secs = pressed($('#qSecs')), types = pressed($('#qTypes'));
+  const qs = buildQuiz(n, secs, types, weakOnly);
+  if (!qs.length) { toast('Pick at least one section and one question type.'); return; }
+  Q = { qs, i: 0, right: 0, misses: [] };
+  $('#qSetup').hidden = true; $('#qResult').hidden = true; $('#qRun').hidden = false; renderQ();
+}
+$('#qStart').addEventListener('click', () => startQuiz(false));
+$('#qWeak').addEventListener('click', () => startQuiz(true));
+$('#qQuit').addEventListener('click', endQuiz);
+function renderQ() {
+  const q = Q.qs[Q.i], body = $('#qBody');
+  $('#qCount').textContent = `${Q.i + 1} / ${Q.qs.length}`; $('#qBar').style.width = (100 * Q.i / Q.qs.length) + '%'; $('#qScore').textContent = `${Q.right} right`;
+  let html = `<div class="card"><div class="q"><b>${esc(q.prompt)}</b><span class="eyebrow">${esc(SEC[keySec(q.key)].short)}</span></div><div class="body">`;
+  if (q.fig) html += `<div class="photo" id="qPhoto"></div>`;
+  if (q.type !== 'find') html += `<div class="choices">${q.choices.map((c, i) => `<button class="choice" data-c="${esc(c)}"><span class="k">${i + 1}</span><span>${esc(c)}</span></button>`).join('')}</div>`;
+  else html += `<div class="hint">Tap the right marker on the photo.</div>`;
+  html += `<div id="qVerdict"></div></div></div>`;
+  body.innerHTML = html;
+  if (q.fig) renderPhoto($('#qPhoto'), q.fig, q.type === 'find' ? { mode: 'find', onClick: (h, b) => answerFind(h, b) } : { mode: 'mark', item: q.type === 'name' ? q.item : q.item });
+  $$('#qBody .choice').forEach(b => b.addEventListener('click', () => answerChoice(b.dataset.c)));
+}
+function verdict(ok, q, extra) {
+  if (ok) Q.right++; else Q.misses.push(q);
+  mark(q.key, ok);
+  const v = $('#qVerdict'); v.className = 'verdict ' + (ok ? 'ok' : 'no');
+  const it = q.item ? ITEMS[q.item] : null;
+  v.innerHTML = `<span>${ok ? 'Correct.' : 'Not quite.'} ${esc(q.answer)}${it && q.type === 'name' && (it.cap != null || it.lp != null || it.size) ? ' · ' + [it.cap != null ? 'rated ' + fmt(it.cap) : '', it.lp != null ? 'lift prov. ' + fmt(it.lp) : '', it.size ? it.size : ''].filter(Boolean).join(', ') : ''}${extra || ''}</span><button class="btn primary" id="qNext">${Q.i + 1 < Q.qs.length ? 'Next →' : 'See results'}</button>`;
+  $('#qNext').addEventListener('click', () => { Q.i++; if (Q.i < Q.qs.length) renderQ(); else endQuiz(); });
+  $('#qNext').focus();
+}
+function answerChoice(c) {
+  const q = Q.qs[Q.i]; if ($('#qVerdict').innerHTML) return;
+  $$('#qBody .choice').forEach(b => { b.disabled = true; if (b.dataset.c === q.answer) b.classList.add('right'); else if (b.dataset.c === c) b.classList.add('wrong'); });
+  verdict(c === q.answer, q);
+}
+function answerFind(h, b) {
+  const q = Q.qs[Q.i]; if ($('#qVerdict').innerHTML) return;
+  const ok = h.item === q.item;
+  $$('#qPhoto .hs').forEach(x => { x.disabled = true; if (x.dataset.item === q.item) { x.classList.remove('blank'); x.classList.add('right'); x.textContent = '✓'; } });
+  if (!ok) { b.classList.remove('blank', 'right'); b.classList.add('wrong'); b.textContent = '✕'; }
+  verdict(ok, q, ok ? '' : ` — you tapped the ${esc(ITEMS[h.item].name)}.`);
+}
+function endQuiz() {
+  $('#qRun').hidden = true; const r = $('#qResult'); r.hidden = false;
+  const n = Q.i, pct = n ? Math.round(100 * Q.right / n) : 0;
+  r.innerHTML = `<div class="result"><div class="eyebrow">Quiz complete</div><div class="big">${pct}%</div><div>${Q.right} of ${n} correct.</div>
+    ${Q.misses.length ? `<div class="eyebrow" style="margin-top:16px">Missed</div><ul>${Q.misses.map(q => `<li><span>${esc(q.prompt)}</span><b>${esc(q.answer)}</b></li>`).join('')}</ul>` : '<p>Nothing missed. Run it again with "Everything" to be sure.</p>'}
+    <div class="row" style="margin-top:16px"><button class="btn primary" id="qAgain">New quiz</button>${Q.misses.length ? '<button class="btn" id="qDrill">Drill the misses</button>' : ''}</div></div>`;
+  $('#qAgain').addEventListener('click', () => { $('#qResult').hidden = true; $('#qSetup').hidden = false; });
+  const d = $('#qDrill'); if (d) d.addEventListener('click', () => { Q = { qs: shuffle(Q.misses.map(q => q.type === 'name' ? qName(q.item) : q.type === 'cap' ? qCap(q.item) : q.type === 'find' ? { ...q } : qFact(FACTS.find(f => 'fact:' + f.id === q.key)))), i: 0, right: 0, misses: [] }; $('#qResult').hidden = true; $('#qRun').hidden = false; renderQ(); });
+}
+
+/* ---------- TABLES ---------- */
+const SWATCH = { Green: '#3a9d4a', Yellow: '#e2c21d', Red: '#d03a2c', Blue: '#2f5fc4' };
+function renderTable(t) {
+  const numCols = t.cols.map((c, i) => /Loops|lbs|Pendant|Lifting|Choked|Vertical|Basket|Weight/.test(c) ? i : -1).filter(i => i >= 0);
+  return `<div><h2 style="font-size:22px;margin-bottom:6px">${esc(t.title)}</h2><div class="tbl"><table><thead><tr>${t.cols.map((c, i) => `<th class="${numCols.includes(i) ? 'num' : ''}">${esc(c)}</th>`).join('')}</tr></thead><tbody>${t.rows.map(r => `<tr>${r.map((c, i) => `<td class="${numCols.includes(i) ? 'num' : ''}">${t.cols[i] === 'Color' ? `<span class="swatch" style="background:${SWATCH[c]}"></span>` : ''}${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div></div>`;
+}
+(function () {
+  const el = $('#tables');
+  const T = DATA.tables;
+  const table = t => renderTable(t);
+  const caps = Object.values(ITEMS).filter(i => i.cap != null || i.lp != null);
+  const seenName = new Set();
+  const capRows = caps.filter(i => { if (seenName.has(i.name)) return false; seenName.add(i.name); return true; }).sort((a, b) => (b.cap || 0) - (a.cap || 0))
+    .map(i => `<div><span>${esc(i.name)}</span><b>${[i.cap != null ? fmt(i.cap) : '', i.lp != null ? 'LP ' + fmt(i.lp) : ''].filter(Boolean).join(' / ')}</b></div>`).join('');
+  const sizes = Object.values(ITEMS).filter(i => i.size).map(i => `<div><span>${esc(i.name)}</span><b>${esc(i.size)}</b></div>`).join('');
+  el.innerHTML = table(T.xxvi_cap) + table(T.xxvi_len) + table(T.round) +
+    `<div><h2 style="font-size:22px;margin-bottom:6px">Rated capacities, every item</h2><p class="cap">LP = lifting provision. Sling leg capacities are per leg; the 24” suspension web is 550 lbs each.</p><div class="caplist">${capRows}</div></div>` +
+    `<div><h2 style="font-size:22px;margin-bottom:6px">Sizes</h2><div class="caplist">${sizes}</div></div>`;
+})();
+
+/* ---------- PROGRESS ---------- */
+function renderProgress() {
+  const rows = $('#progRows'); rows.innerHTML = '';
+  DATA.sections.forEach(s => {
+    const keys = allKeys(new Set([s.id])); const m = keys.filter(k => stat(k).box >= 3).length; const p = keys.filter(k => { const b = stat(k).box; return b > 0 && b < 3; }).length;
+    rows.innerHTML += `<div class="prow"><span>${esc(s.name)}</span><div class="bar" title="${m} mastered, ${p} in progress, ${keys.length - m - p} untouched"><i style="width:${100 * m / keys.length}%"></i><i class="part" style="width:${100 * p / keys.length}%"></i></div><span class="num">${m}/${keys.length}</span></div>`;
+  });
+  const weak = allKeys().map(k => ({ k, s: stat(k) })).filter(x => x.s.wrong > 0 && x.s.box < 3).sort((a, b) => (b.s.wrong - b.s.right) - (a.s.wrong - a.s.right)).slice(0, 15);
+  $('#weak').innerHTML = `<div class="eyebrow">Weakest items</div>` + (weak.length ? `<ul>${weak.map(x => `<li><span>${esc(keyLabel(x.k))}</span><span class="num">${x.s.right}✓ ${x.s.wrong}✕</span></li>`).join('')}</ul>` : '<p class="hint">Nothing missed yet. Take a quiz and this list fills in.</p>');
+  const d = Math.max(1, Math.ceil((TARGET - new Date()) / 86400000));
+  $('#plan').innerHTML = `<div class="eyebrow">Suggested plan: ${d} day${d === 1 ? '' : 's'} left</div><ol>
+    <li>Study tab, one section per sitting, with names hidden. Tap every number and say the name and capacity out loud before revealing.</li>
+    <li>Flashcards for 10 minutes a day. Keep "Rated capacity" and "Sizes &amp; tables" on; those are what people forget.</li>
+    <li>Quiz on "Everything" at least twice before 9 NOV, then "Drill my weak items" until the Weakest list is empty.</li>
+    <li>Round sling colors and the Type XXVI loop table are pure memorization: write them out from memory on the last two days.</li></ol>`;
+}
+$('#resetBtn').addEventListener('click', () => { const b = $('#resetBtn'); if (b.dataset.arm) { STATS = {}; save(); updateMastery(); renderProgress(); buildFigList(); showFig(stIdx); b.textContent = 'Reset all progress'; delete b.dataset.arm; toast('Progress cleared.'); } else { b.dataset.arm = '1'; b.textContent = 'Tap again to confirm reset'; setTimeout(() => { delete b.dataset.arm; b.textContent = 'Reset all progress'; }, 3000); } });
+
+/* ---------- keyboard ---------- */
+document.addEventListener('keydown', e => {
+  if (e.target.matches('input,textarea')) return;
+  const tab = $('.tabs [aria-selected="true"]').dataset.tab;
+  if (tab === 'study') { if (e.key === 'ArrowRight') showFig(stIdx + 1); else if (e.key === 'ArrowLeft') showFig(stIdx - 1); else if (e.key.toLowerCase() === 'h') $('#toggleLabels').click(); else if (/^[1-9]$/.test(e.key)) { const f = FIGS[stIdx]; const l = f.legend.find(x => x.n.startsWith(e.key)); if (l) selectHS(l.n); } }
+  if (tab === 'cards' && fcCur) { if (e.key === ' ') { e.preventDefault(); if (!fcFlipped) { fcFlipped = true; renderCard(); } } else if (fcFlipped && e.key === '1') $('#fcMiss').click(); else if (fcFlipped && e.key === '2') $('#fcGot').click(); }
+  if (tab === 'quiz' && Q && !$('#qRun').hidden) { if (/^[1-4]$/.test(e.key)) { const b = $$('#qBody .choice')[+e.key - 1]; if (b && !b.disabled) b.click(); } else if (e.key === 'Enter') { const n = $('#qNext'); if (n) n.click(); } }
+});
+
+/* ---------- boot ---------- */
+buildFigList(); showFig(stIdx); updateMastery();
+const h = (location.hash || '').slice(1); if (['study', 'cards', 'quiz', 'tables', 'progress'].includes(h)) showTab(h);
+</script>
