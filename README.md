@@ -6,7 +6,7 @@ Modes: Study (photos with hotspots, hide-names self-test), Flashcards (spaced re
 
 ## Run it
 
-Open `index.html` in a browser. No build step and no server needed; progress is saved in the browser's local storage.
+Live: https://m94-prog.github.io/pathfinder-nomenclature-trainer/ — or open `Pathfinder_Nomenclature_Trainer.html` (single file, works offline).
 
 ## Files
 
