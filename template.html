@@ -189,7 +189,7 @@ td.num,th.num{text-align:right}
 <header class="top"><div class="in">
   <h1>Pathfinder Nomenclature<small>Sling load equipment · A-22 · Cargo nets · M1101 · M1151 · Blivets · ISV</small></h1>
   <div class="mastery"><span>Mastered</span><div class="bar"><i id="mBar"></i></div><span id="mPct" class="num">0%</span></div>
-  <div class="countdown"><b id="cdNum">—</b><span id="cdLbl">days to<br>9 NOV</span></div>
+  <div class="countdown"><b id="cdNum">—</b><span id="cdLbl">days to<br>15 NOV</span></div>
 </div></header>
 <nav class="tabs"><div class="in" role="tablist">
   <button role="tab" data-tab="study" aria-selected="true">Study</button>
@@ -285,7 +285,7 @@ td.num,th.num{text-align:right}
 
 <script>
 const DATA = __DATA__;
-const TARGET = new Date(2026, 10, 9); // 9 NOV 2026
+const TARGET = new Date(2026, 10, 15); // 15 NOV 2026 (last study day)
 const SEC = Object.fromEntries(DATA.sections.map(s => [s.id, s]));
 const ITEMS = DATA.items, FIGS = DATA.figures, FACTS = DATA.facts, POOLS = DATA.pools;
 const FIG_BY_ID = Object.fromEntries(FIGS.map(f => [f.id, f]));
@@ -324,7 +324,7 @@ function updateMastery() {
   $('#mBar').style.width = p + '%'; $('#mPct').textContent = p + '%';
 }
 /* countdown */
-(function () { const now = new Date(); const d = Math.ceil((TARGET - new Date(now.getFullYear(), now.getMonth(), now.getDate())) / 86400000); $('#cdNum').textContent = d > 0 ? d : (d === 0 ? 'Today' : '0'); if (d <= 0) $('#cdLbl').innerHTML = d === 0 ? 'is<br>9 NOV' : 'past<br>9 NOV'; })();
+(function () { const now = new Date(); const d = Math.ceil((TARGET - new Date(now.getFullYear(), now.getMonth(), now.getDate())) / 86400000); $('#cdNum').textContent = d > 0 ? d : (d === 0 ? 'Today' : '0'); if (d <= 0) $('#cdLbl').innerHTML = d === 0 ? 'is<br>15 NOV' : 'past<br>15 NOV'; })();
 
 /* ---------- tabs ---------- */
 $$('.tabs [role=tab]').forEach(b => b.addEventListener('click', () => showTab(b.dataset.tab)));
@@ -620,7 +620,7 @@ function renderProgress() {
   $('#plan').innerHTML = `<div class="eyebrow">Suggested plan: ${d} day${d === 1 ? '' : 's'} left</div><ol>
     <li>Study tab, one section per sitting, with names hidden. Tap every number and say the name and capacity out loud before revealing.</li>
     <li>Flashcards for 10 minutes a day. Keep "Rated capacity" and "Sizes &amp; tables" on; those are what people forget.</li>
-    <li>Quiz on "Everything" at least twice before 9 NOV, then "Drill my weak items" until the Weakest list is empty.</li>
+    <li>Quiz on "Everything" at least twice before 15 NOV, then "Drill my weak items" until the Weakest list is empty.</li>
     <li>Round sling colors and the Type XXVI loop table are pure memorization: write them out from memory on the last two days.</li></ol>`;
 }
 $('#resetBtn').addEventListener('click', () => { const b = $('#resetBtn'); if (b.dataset.arm) { STATS = {}; save(); updateMastery(); renderProgress(); buildFigList(); showFig(stIdx); b.textContent = 'Reset all progress'; delete b.dataset.arm; toast('Progress cleared.'); } else { b.dataset.arm = '1'; b.textContent = 'Tap again to confirm reset'; setTimeout(() => { delete b.dataset.arm; b.textContent = 'Reset all progress'; }, 3000); } });
