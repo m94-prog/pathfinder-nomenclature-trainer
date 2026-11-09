@@ -252,6 +252,21 @@ TF = []
 for loops, pend, lp in [r for r in TABLES["xxvi_cap"]["rows"]]:
     TF.append({"id": f"xxvi_p{loops}", "q": f"Type XXVI, {loops}-loop, used as a pendant: rated capacity?", "a": pend, "pool": "xxvi", "sec": "sling"})
     TF.append({"id": f"xxvi_l{loops}", "q": f"Type XXVI, {loops}-loop, used as a lifting provision: rated capacity?", "a": lp, "pool": "xxvi", "sec": "sling"})
+# Addition memory aid: memorize the 2- and 3-loop rows; 4 = 2 + 2, 6 = 3 + 3.
+XXVI_MATH = {
+    "2": ("5,600 + 3,300", "Base number"),
+    "3": ("8,500 + 5,000", "Base number"),
+    "4": ("8,900 + 8,900", "5,600 + 5,600"),
+    "6": ("13,500 + 13,500", "8,500 + 8,500"),
+}
+TABLES["xxvi_cap"]["math"] = [["", XXVI_MATH[r[0]][0], XXVI_MATH[r[0]][1]] for r in TABLES["xxvi_cap"]["rows"]]
+TABLES["xxvi_cap"]["foot"] = "Memorize the 2- and 3-loop lifting provisions (5,600 and 8,500). Pendant = lifting provision + 3,300 (2-loop) or + 5,000 (3-loop). 4-loop = 2-loop + 2-loop. 6-loop = 3-loop + 3-loop."
+for f in TF:
+    if f["id"].startswith("xxvi_p") or f["id"].startswith("xxvi_l") and not f["id"].startswith("xxvi_len"):
+        loops = f["id"][6:]
+        m = XXVI_MATH[loops][0 if f["id"].startswith("xxvi_p") else 1]
+        if m != "Base number": f["hint"] = f"{m} = {f['a']}"
+        else: f["hint"] = "Base number: memorize this one. 4-loop doubles the 2-loop, 6-loop doubles the 3-loop."
 for loops, lens in TABLES["xxvi_len"]["rows"]:
     TF.append({"id": f"xxvi_len{loops}", "q": f"Type XXVI, {loops}-loop: which lengths are available?", "a": lens, "pool": "xxvi_len", "sec": "sling"})
 seen = set()
